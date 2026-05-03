@@ -14,6 +14,7 @@
 | RAII 与异常安全 | [raii_exceptions.md](raii_exceptions.md) | `exception_ptr` 实现、栈展开机制、`noexcept` 与移动构造、强/基本/无异常保证、`scoped_lock` RAII 模板 |
 | 关键字应用 | [keywords.md](keywords.md) | `constexpr` 编译期计算、`noexcept` 优化、`decltype`/`decltype(auto)` 推导规则、`explicit`/`override`/`final` 场景 |
 | 内存对齐与不对齐 | [memory_alignment.md](memory_alignment.md) | `alignas` / `__attribute__((packed))` 语法、DMA/SIMD/Cache Line 对齐应用、协议栈紧凑布局、`offsetof` 验证、对齐与性能权衡 |
+| 多态 | [polymorphism.md](polymorphism.md) | C++ 静态多态(模板/CRTP)、动态多态(虚函数/vtable)、C 语言实现 OOP(函数指针表/共享 vtable/继承模拟) |
 
 ## Python 自动化
 
