@@ -109,6 +109,9 @@ void execute_motor(Motor<T>& m) {
 | 能否容器存储不同类型 | ✅ `vector<Motor*>` | ❌ 必须知道具体类型或用 variant |
 | 适用场景 | 运行时多态，类型动态变化 | 性能热路径，类型编译期已知 |
 
+> **可运行的完整示例:** [example/crtp_motor/](example/crtp_motor/) — 包含 `Motor<Derived>` 模板、BLDC(FOC)/Stepper(脉冲) 子类实现、编译期多态调用和 `sizeof` 内存对比。
+| 适用场景 | 运行时多态，类型动态变化 | 性能热路径，类型编译期已知 |
+
 ---
 
 ## 三、C++ 动态多态（运行时）
@@ -352,7 +355,194 @@ BLDC* to_bldc(Motor* m) {
 }
 ```
 
-这是 Linux 内核中无处不在的模式。例如 `struct file_operations` 就是 vtable，每个文件系统（ext4、proc、sysfs）提供自己的实现。
+**为什么 base 必须是第一个成员？**
+
+C 标准保证：**struct 第一个成员的地址等于整个 struct 的地址**（不允许在最前面插入 padding）。
+
+```
+BLDC 对象的内存布局:
+
+  地址: 0x1000 ←── BLDC* b 指向这里
+  ┌──────────────────────┐
+  │  Motor base          │  ← 0x1000  (第一个成员, 地址与 b 相同)
+  │    ├ vtable   (8B)   │
+  │    ├ max_speed(2B)   │
+  │    └ cur_speed(2B)   │
+  ├──────────────────────┤
+  │  uint16_t foc_mode   │  ← 0x100C
+  ├──────────────────────┤
+  │  float current_kp    │  ← 0x1010
+  ├──────────────────────┤
+  │  float current_ki    │  ← 0x1014
+  └──────────────────────┘
+
+  (BLDC*)0x1000  ──强制转换──►  (Motor*)0x1000   ← 地址完全相同！
+```
+
+反过来，如果 base 不是第一个成员：
+
+```
+错误布局: base 排在第二个位置
+
+  地址: 0x1000 ←── BLDC* b 指向这里
+  ┌──────────────────────┐
+  │  uint16_t foc_mode   │  ← 0x1000  (第一个成员)
+  ├──────────────────────┤
+  │  Motor base          │  ← 0x1004  (偏移了 4 字节！)
+  │    ├ vtable  (8B)    │
+  │    └ ...
+  └──────────────────────┘
+
+  (BLDC*)0x1000  ──强制转换──►  (Motor*)0x1000
+                                      ↑
+                    Motor* 指向 0x1000, 但 base 实际在 0x1004
+
+  m->vtable → *(0x1000) 读到的是 foc_mode, 不是 vtable → 函数指针跳转到垃圾地址 → 死机
+```
+
+这就是为什么 Linux 内核中所有"继承"关系（如 `struct usb_device` 内含 `struct device` 作为首成员）都把父类放在第一位——保证 `container_of` 宏和向上转型的正确性。
+
+### 4.5 Linux 内核中的 C OOP 实例
+
+当前系统内核版本：`6.8.0-107-generic`。以下摘录均来自实际源码。
+
+**实例一：`struct file_operations` —— 纯虚函数表**
+
+```c
+// include/linux/fs.h:1992-2035 (Linux 6.8)
+struct file_operations {
+    struct module *owner;
+    loff_t (*llseek) (struct file *, loff_t, int);
+    ssize_t (*read) (struct file *, char __user *, size_t, loff_t *);
+    ssize_t (*write) (struct file *, const char __user *, size_t, loff_t *);
+    ssize_t (*read_iter) (struct kiocb *, struct iov_iter *);
+    ssize_t (*write_iter) (struct kiocb *, struct iov_iter *);
+    int (*iopoll)(struct kiocb *, struct io_comp_batch *, unsigned int flags);
+    int (*iterate_shared) (struct file *, struct dir_context *);
+    __poll_t (*poll) (struct file *, struct poll_table_struct *);
+    long (*unlocked_ioctl) (struct file *, unsigned int, unsigned long);
+    long (*compat_ioctl) (struct file *, unsigned int, unsigned long);
+    int (*mmap) (struct file *, struct vm_area_struct *);
+    int (*open) (struct inode *, struct file *);
+    int (*flush) (struct file *, fl_owner_t id);
+    int (*release) (struct inode *, struct file *);
+    int (*fsync) (struct file *, loff_t, loff_t, int datasync);
+    int (*fasync) (int, struct file *, int);
+    int (*lock) (struct file *, int, struct file_lock *);
+    ssize_t (*splice_write)(struct pipe_inode_info *, struct file *, loff_t *, size_t, unsigned int);
+    ssize_t (*splice_read)(struct file *, loff_t *, struct pipe_inode_info *, size_t, unsigned int);
+    long (*fallocate)(struct file *, int mode, loff_t offset, loff_t len);
+    ssize_t (*copy_file_range)(struct file *, loff_t, struct file *, loff_t, size_t, unsigned int);
+    int (*fadvise)(struct file *, loff_t, loff_t, int);
+    // ... 共 29 个函数指针
+} __randomize_layout;
+```
+
+这张表就是 Linux VFS 的"虚函数表"。每个文件系统提供自己的实现——ext4 有 `ext4_file_operations`，proc 有 `proc_reg_file_ops`，sysfs 有 `sysfs_file_operations`。当用户进程调用 `read(fd)` 时，内核通过 `file->f_op->read()` 走 vtable 间接跳转到对应文件系统的实现。
+
+**实例二：`container_of` —— 手工向下转型 (RTTI 的替代)**
+
+```c
+// include/linux/container_of.h:18-23 (Linux 6.8)
+#define container_of(ptr, type, member) ({              \
+    void *__mptr = (void *)(ptr);                       \
+    static_assert(__same_type(*(ptr), ((type *)0)->member) ||  \
+                  __same_type(*(ptr), void),            \
+                  "pointer type mismatch in container_of()"); \
+    ((type *)(__mptr - offsetof(type, member))); })
+```
+
+**`offsetof` 实现：**
+
+这是 `container_of` 的数学基础——从子成员的地址反推出父结构体的地址：
+
+```c
+#define offsetof(type, member) __builtin_offsetof(type, member)
+// 等价于: ((size_t)&(((type *)0)->member))
+// 把 NULL 指针当成 type* 来取 member 的地址 → 得到 member 在 type 中的偏移量
+```
+
+**`container_of` 工作原理图解：**
+
+```
+   已知: Motor* m (指向 BLDC 的 base 成员), base 偏移量 = 12
+
+   通过 container_of(m, BLDC, base):
+        BLDC* b = (BLDC*)((uint8_t*)m - 12);
+                                ↑
+                    地址回退 12 字节就能拿到 BLDC* 指针
+```
+
+**实例三：`struct usb_device` —— 继承 + container_of**
+
+```c
+// include/linux/usb.h:651-661, 733
+struct usb_device {
+    struct device dev;               // ← 父类 (不是第一个成员!)
+    int           devnum;
+    char          devpath[16];
+    enum usb_device_state state;
+    enum usb_device_speed  speed;
+    // ...
+};
+
+// include/linux/usb.h:733
+#define to_usb_device(__dev)  container_of_const(__dev, struct usb_device, dev)
+
+// 使用示例 (驱动代码中):
+void usb_probe(struct device *dev) {           // 回调参数是父类指针
+    struct usb_device *udev = to_usb_device(dev);  // 向下转型!
+    // 访问子类特有字段
+    udev->devnum = ...;
+}
+```
+
+`struct device` 是 Linux 驱动模型的核心。`usb_device`、`platform_device`、`pci_dev` 都是以它为基础向下拓展。回调函数收到 `struct device*`，通过 `container_of` 找回原始的子类类型。
+
+**实例四：`struct platform_device` —— 另一个继承链**
+
+```c
+// include/linux/platform_device.h:23-29 (Linux 6.8)
+struct platform_device {
+    struct device dev;               // ← 父类 (非首成员)
+    const char   *name;
+    int           id;
+    bool          id_auto;
+    u64           platform_dma_mask;
+    // ...
+};
+```
+
+**实例五：proc 文件系统的 vtable 实例化**
+
+```c
+// 内核中某个 proc 驱动的 file_operations 实例 (简化):
+static const struct file_operations my_proc_fops = {
+    .owner   = THIS_MODULE,
+    .read    = my_proc_read,
+    .write   = my_proc_write,
+    .open    = my_proc_open,
+    .release = my_proc_release,
+    .llseek  = default_llseek,
+};
+// 未赋值的函数指针 (如 .mmap) 自然为 NULL → VFS 层会返回 -ENODEV
+```
+
+### 4.6 内核模式与我们 `c_oop` 示例的对应关系
+
+| 内核中的角色 | 内核结构体/宏 | 我们的 c_oop 实现 |
+|------------|-------------|---------------|
+| 虚函数表 | `struct file_operations` | `struct MotorVTable` |
+| 基类 | `struct device` | `struct Motor` |
+| 子类 | `struct usb_device`, `struct platform_device` | `BLDC`, `Stepper` |
+| 向上转型 | `(struct device*)udev` | `(Motor*)&bldc->base` |
+| 向下转型 | `to_usb_device(dev)` → `container_of` | `to_bldc(m)` → vtable 对比 |
+| vtable 实例 | `ext4_file_operations` | `bldc_vtable` |
+| 多态调用 | `file->f_op->read(file, buf, len, off)` | `m->vtable->run(m, speed)` |
+
+> 关键区别：内核的 `struct device` **不是** `usb_device` 的第一个成员，因此向下转型必须用 `container_of`/`offsetof` 做指针回退。我们 c_oop 示例把 `base` 放在第一位，使向上转型更简单（无需 offsetof 调整地址）。
+
+> **可运行的完整示例:** [example/c_oop/](example/c_oop/) — 包含共享 vtable、BLDC(FOC)/Stepper(脉冲) 实现、`base` 首成员继承、运行时多态调用和内存对比。
 
 ### 4.4 实际案例：STM32 HAL 的 UART 抽象
 
