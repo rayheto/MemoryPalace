@@ -3,7 +3,7 @@
 ## 培训资料
 
 - **Bootlin Training Materials:** [https://bootlin.com/docs/](https://bootlin.com/docs/)
-  - 重点看 Embedded Linux 和 Kernel/Driver Debugging 的 PPT
+  - 重点看 Embedded Linux 和 Kernel/Driver Debugging 的 PPT![[embedded-linux-stm32mp2-labs.pdf]]
 
 ## 书籍
 
@@ -19,4 +19,4 @@
 ## 实时 Linux
 
 - **PREEMPT_RT:** [https://wiki.linuxfoundation.org/realtime/](https://wiki.linuxfoundation.org/realtime/)
-- **OpenAMP (跨核通信):** [https://www.openampproject.org/](https://www.openampproject.org/)
+- **OpenAMP (跨核通信):** [https://www.openampproject.org/](https://www.openampproject.org/)![[OpenAMP-Elevator-Pitch-2025-Q1.pdf]]
