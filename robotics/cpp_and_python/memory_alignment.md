@@ -1,3 +1,5 @@
+# 内存对齐与不对齐 —— 从语法到底层应用
+
 ## 一、 C 语言中的实现方式
 
 在 C11 标准之前，我们主要依赖编译器扩展；C11 引入了标准关键字。
@@ -23,7 +25,7 @@ struct HighSpeedBuf {
 - **MSVC:** 使用 `__declspec(align(n))`，例如 `__declspec(align(64)) struct Buf { ... };`。
 
 ### 2. 内存不对齐 / 紧凑布局 (Packing)
-**注意：** C 标准库本身**没有**提供标准的“不对齐”关键字，这完全依赖编译器指令。
+**注意：** C 标准库本身**没有**提供标准的"不对齐"关键字，这完全依赖编译器指令。
 *   **指定结构体紧凑 (常用的两种方式):**
     ```c
     // 方式 A: 属性标注 (推荐，作用于特定结构体)
@@ -103,7 +105,7 @@ struct [[gnu::packed]] ProtocolHeader {
 
 ## 三、 内存布局的应用
 
-在嵌入式与系统级开发中，理解内存对齐（Alignment）与不对齐（Packing）的**应用场景**，是写出”既快又稳”代码的关键。
+在嵌入式与系统级开发中，理解内存对齐（Alignment）与不对齐（Packing）的**应用场景**，是写出"既快又稳"代码的关键。
 
 ### 1. 内存对齐 —— 空间换时间
 
@@ -242,9 +244,11 @@ struct __attribute__((packed)) FirmwareHeader {
 }; // 正好 16B，无 Padding
 ```
 
-## 四、 核心区别与面试”坑点”
+---
 
-### 1. `alignas` 只能”变大”，不能”变小”
+## 四、 核心区别与面试"坑点"
+
+### 1. `alignas` 只能"变大"，不能"变小"
 
 - `alignas(8) int a;` — 有效，将 4 字节对齐提升到 8 字节。
 - `alignas(1) int a;` — **编译错误**。取消对齐必须用 `packed` 属性。
@@ -252,7 +256,7 @@ struct __attribute__((packed)) FirmwareHeader {
 验证实际对齐值：
 
 ```cpp
-static_assert(alignof(int) == 4, “int 默认 4 字节对齐”);
+static_assert(alignof(int) == 4, "int 默认 4 字节对齐");
 // C11: 使用 _Alignof，C++11: 使用 alignof
 ```
 
@@ -294,14 +298,14 @@ struct __attribute__((packed)) Frame {
     uint32_t timestamp;
 };
 // 期望值为 1 (id 占 1 字节后紧接 timestamp)，若非 1 则 packed 未生效
-static_assert(offsetof(struct Frame, timestamp) == 1, “Packing failed!”);
+static_assert(offsetof(struct Frame, timestamp) == 1, "Packing failed!");
 ```
 
 ---
 
 ## 五、 面试官进阶问题：如何选择？
 
-如果面试官问：”既然不对齐会降低性能，那为什么不永远使用对齐？”
+如果面试官问："既然不对齐会降低性能，那为什么不永远使用对齐？"
 
 你可以从以下工程权衡（Trade-off）角度回答：
 
@@ -314,7 +318,7 @@ static_assert(offsetof(struct Frame, timestamp) == 1, “Packing failed!”);
 
 **避坑金句（面试加分）：**
 
-> “在处理不对齐的通信报文时，我更倾向于使用 `memcpy` 将数据拷贝到一个已对齐的本地变量中再进行逻辑运算。这样既能保证协议解析的准确性，又能利用编译器优化来规避非对齐访问带来的性能开销和崩溃风险。”
+> "在处理不对齐的通信报文时，我更倾向于使用 `memcpy` 将数据拷贝到一个已对齐的本地变量中再进行逻辑运算。这样既能保证协议解析的准确性，又能利用编译器优化来规避非对齐访问带来的性能开销和崩溃风险。"
 
 **补充技巧 —— 编译器优化提示:**
 
@@ -327,4 +331,3 @@ float *aligned_ptr = __builtin_assume_aligned(dma_buffer, 16);
 // C++20 标准做法
 // 使用 std::assume_aligned (P1007R3, 部分编译器已支持)
 ```
-
