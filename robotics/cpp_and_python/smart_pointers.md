@@ -180,7 +180,176 @@ template<typename _Tp>
 
 ---
 
-## 3. 应用场景
+## 3. `weak_ptr` 源码分析 —— 不增引用计数的观察者
+
+### 3.1 `__weak_ptr` 类的数据成员
+
+```cpp
+// bits/shared_ptr_base.h:1978-1993 (GCC 14.1.0)
+class __weak_ptr
+{
+public:
+    using element_type = typename remove_extent<_Tp>::type;
+
+    constexpr __weak_ptr() noexcept
+    : _M_ptr(nullptr), _M_refcount()      // ① _M_refcount 默认构造为空
+    { }
+
+    // 从 shared_ptr 构造
+    template<typename _Yp, typename = _Compatible<_Yp>>
+        __weak_ptr(const __shared_ptr<_Yp, _Lp>& __r) noexcept
+        : _M_ptr(__r._M_ptr), _M_refcount(__r._M_refcount)  // ② 共享控制块, 但不增加 _M_use_count
+        { }
+
+private:
+    element_type*  _M_ptr;          // 指向被管理对象的裸指针
+    __weak_count<_Lp> _M_refcount;  // 弱引用计数管理
+};
+```
+
+**关键：** 从 `shared_ptr` 构造 `weak_ptr` 时，只拷贝了 `_M_refcount`（控制块指针），但《没有调用 `_M_add_ref_copy()`》。这意味着 `_M_use_count` 不增加——被管理对象可能在 `weak_ptr` 存在期间被销毁。
+
+### 3.2 `_M_weak_count` 的独立生命周期
+
+```c
+控制块的生命周期 = 最长的 { 最后一个 shared_ptr 的销毁, 最后一个 weak_ptr 的销毁 }
+
+在 _Sp_counted_base 初始化时:
+  _M_use_count = 1   (对应第一个 shared_ptr)
+  _M_weak_count = 1  (对应"shared_ptr 存在"这个事实, 也即 #weak_ptr + 1)
+
+weak_ptr 拷贝: _M_weak_count++     (line 204)
+weak_ptr 析构: _M_weak_count--     (line 211-216)
+  → 当 _M_weak_count == 0 时 → _M_destroy() → delete this
+
+shared_ptr 的 _M_release_last_use():
+  _M_dispose()             ← 先销毁被管理对象
+  _M_weak_count--          ← 再通知"没有 shared_ptr 了"
+    → 此时若 _M_weak_count == 0 → 说明也没有弱引用者 → _M_destroy()
+```
+
+**内存时序图：**
+
+```
+时间 →  创建 share1   创建 weak1    share1 销毁      weak1 销毁
+         │            │             │                │
+_M_use: 1            1             0 (dispose obj)   0
+_M_weak:1            2             1                0 (delete this)
+
+关键: share1 销毁后对象已析构, 但控制块还活着(weak_count=1, weak1 还在引用它)
+      当 weak1 也析构后(weak_count→0), 控制块才被 delete
+```
+
+### 3.3 `lock()` —— 尝试晋升为 shared_ptr
+
+```cpp
+// bits/shared_ptr_base.h:2070-2072 (GCC 14.1.0)
+__shared_ptr<_Tp, _Lp>
+lock() const noexcept
+{ return __shared_ptr<element_type, _Lp>(*this, std::nothrow); }
+```
+
+`lock()` 委托给 `__shared_ptr` 的一个特殊构造函数，该构造函数调用 `_M_add_ref_lock_nothrow()`：
+
+```cpp
+// bits/shared_ptr_base.h:1245-1256 (GCC 14.1.0)
+// shared_ptr 的弱锁构造 (由 weak_ptr::lock() 调用)
+template<typename _Yp, typename _Lp>
+    __shared_ptr(const __weak_ptr<_Yp, _Lp>& __r, std::nothrow_t)
+    : _M_ptr(), _M_refcount(__r._M_refcount)  // 先拷贝控制块
+{
+    if (_M_pi == nullptr || !_M_pi->_M_add_ref_lock_nothrow())
+    {
+        _M_ptr = nullptr;    // 若对象已死, shared_ptr 为空
+        _M_refcount = __shared_count<_Lp>();  // 释放控制块引用
+    }
+    else
+        _M_ptr = __r._M_ptr; // 成功提升: 对象还活着, _M_use_count 已 +1
+}
+```
+
+### 3.4 `_M_add_ref_lock_nothrow()` 的三种实现
+
+```cpp
+// 实现一: _S_single (单线程, bits/shared_ptr_base.h:244-249)
+bool _M_add_ref_lock_nothrow() noexcept
+{
+    if (_M_use_count == 0)
+        return false;       // 对象已死
+    ++_M_use_count;          // 原子 +1（单线程不需要原子指令）
+    return true;
+}
+
+// 实现二: _S_atomic (多线程, bits/shared_ptr_base.h:269-283)
+// ★ 这是最重要的版本 —— CAS 无锁循环
+bool _M_add_ref_lock_nothrow() noexcept
+{
+    _Atomic_word __count = _M_get_use_count();
+    do
+    {
+        if (__count == 0)
+            return false;    // ① 发现 use_count 为 0 → 对象已死, 立即返回 false
+    }
+    while (!__atomic_compare_exchange_n(
+        &_M_use_count,        // ② 尝试 CAS: 如果 _M_use_count 还是 __count
+        &__count,              //    就替换为 __count + 1
+        __count + 1,           // ③ CAS 失败 → __count 被更新为新值, 循环重试
+        true, __ATOMIC_ACQ_REL, __ATOMIC_RELAXED));
+    return true;              // ④ CAS 成功 → use_count 已原子+1 → shared_ptr 构造有效
+}
+
+// 实现三: _S_mutex (锁保护, bits/shared_ptr_base.h:255-263)
+bool _M_add_ref_lock_nothrow() noexcept
+{
+    __gnu_cxx::__scoped_lock sentry(*this);
+    if (__gnu_cxx::__exchange_and_add_dispatch(&_M_use_count, 1) == 0)
+    {
+        _M_use_count = 0;  // 发现已为 0, 回退
+        return false;
+    }
+    return true;
+}
+```
+
+**CAS 版本的原理解析：**
+
+```
+假设两个线程同时调用 weak_ptr::lock():
+
+线程 A                           线程 B
+────────────────────────────────────────────────────
+read count=1                     read count=1
+CAS(1→2) 成功                     CAS(1→2) 失败 (已被 A 改成 2)
+use_count=2                      重新 read count=2
+return true                      CAS(2→3) 成功
+                                 use_count=3
+                                 return true
+
+→ 两个 shared_ptr 都获取成功, use_count 正确递增到 3
+
+过一段时间, 对象被销毁:
+
+线程 C                          线程 D
+────────────────────────────────────────────────────
+read count=0                     read count=0
+return false (对象已死)           return false (对象已死)
+
+→ 两者都得到空 shared_ptr, 安全
+```
+
+### 3.5 `expired()` —— 检查对象是否存活
+
+```cpp
+bool expired() const noexcept
+{ return _M_refcount._M_get_use_count() == 0; }
+// 等价于 use_count() == 0
+```
+
+`expired()` 只是读取 `_M_use_count`。但它有竞态窗口：检查 `expired()` 为 false 后，另一个线程可能同时销毁最后一个 `shared_ptr`，导致 `lock()` 失败。**正确做法是直接调用 `lock()` 而非先 `expired()` 再 `lock()`。**
+
+---
+
+## 4. 应用场景
 
 ### 场景 1：硬件资源的独占所有权 —— `unique_ptr` + 自定义 deleter
 
