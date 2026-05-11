@@ -14,6 +14,28 @@
 | RL 训练管线 | [training.md](training.md) | NP3O 算法、IsaacGym/MuJoCo 双后端、奖励函数设计、配置速查 |
 | Sim2Real 部署 | [deployment.md](deployment.md) | 模型导出(JIT/ONNX/TVM)、Odroid RT内核安装、三Task架构(500Hz控制)、SPI+CAN+UDP协议栈 |
 | 代码仓库地图 | [repos.md](repos.md) | 各 git 仓库关系、外部参考项目(宇树/稚辉君/EngineAI/VLN)、依赖链 |
+| **源码深度分析** | **[src_analysis/](src_analysis/)** | **control_task, navigation_task, 训练管线, 固件, 通信协议** |
+
+---
+
+## 源码分析索引 ([src_analysis/](src_analysis/))
+
+```
+src_analysis/
+├── omnibothub/           # 机载软件 (Odroid C4)
+│   ├── overview.md       # 架构总览
+│   ├── control_task.md   # 实时控制器 (C++, 500Hz, 7线程, 步态状态机, TVM RL)
+│   ├── navigation_task.md # 通信桥接 (C++, UDP服务, 共享内存, 数据日志)
+│   └── protocols.md      # SPI+CAN+共享内存+UDP 协议规格
+├── omnibotctrl/          # 训练与仿真
+│   ├── overview.md       # 架构总览
+│   └── training_pipeline.md # NP3O算法, Actor-Critic, 域随机化, sim2sim
+├── omnibottele/          # 遥控系统
+│   ├── overview.md       # 架构总览
+│   └── firmware.md       # STM32(nRF24L01+ANO)+ESP32(LVGL), 电机固件说明
+└── omnibothmi/           # 地面站
+    └── overview.md       # OmniRobHmi.exe, py_ui.py, py_xbox.py
+```
 
 ---
 
