@@ -30,7 +30,7 @@
 
 6 个非零矢量幅值相等（$= \frac{2}{3}V_{dc}$），相位间隔 60°，在复平面上构成**正六边形**：
 
-![SVPWM 六边形矢量图](https://www.switchcraft.org/img/space_vectors.png)
+![SVPWM 六边形矢量图](https://images.squarespace-cdn.com/content/v1/584729023e00bebf8abd6ba0/1537207349252-DQR4QNU0ZOSWADVRR1VR/3ph_fixed_animate.gif?format=2500w)
 
 ---
 
