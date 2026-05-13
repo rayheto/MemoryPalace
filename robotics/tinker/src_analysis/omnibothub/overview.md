@@ -9,6 +9,7 @@ Odroid C4 上运行的实时控制与通信软件。基于 Linux PREEMPT_RT，7 
 | [control_task.md](control_task.md) | 实时控制器 (C++, 500Hz), 线程架构, 步态状态机, TVM RL 推理, SPI 共享内存, 力/阻抗控制 |
 | [navigation_task.md](navigation_task.md) | 通信桥接 (C++, 6 线程), OCU/SDK/ARM UDP 服务, 数据日志 |
 | [module-architecture.md](module-architecture.md) | CMake 全模块架构分析：构建目标、依赖关系图、模块职责、调用层次、外部依赖 |
+| [spi-architecture.md](spi-architecture.md) | SPI 通信架构全解析：三进程拓扑、hardware/control/navigation 职责分离、共享内存仲裁协议、读写帧完整字段映射、健康监控、二进制符号反推 |
 | [protocols.md](protocols.md) | SPI(2048B 全双工帧), CAN(MIT Mini Cheetah), 共享内存(MEM_SPI/MEM_CONTROL), UDP(5 端口) |
 
 ## 源码路径
@@ -16,7 +17,7 @@ Odroid C4 上运行的实时控制与通信软件。基于 Linux PREEMPT_RT，7 
 ```
 OmniBotHub/Linux/
 ├── release/Build/              # 预编译二进制
-│   ├── hardware_task_tinker     # STM32 电机固件 (645KB, 无源码)
+│   ├── hardware_task_tinker     # 硬件 SPI 驱动 (645KB, ARM64 Linux ELF, 无源码)
 │   ├── control_task_tinker      # 实时控制 (586KB)
 │   └── navigation_task_tinker   # 通信桥接 (402KB)
 ├── control_task2/               # 实时控制源码
