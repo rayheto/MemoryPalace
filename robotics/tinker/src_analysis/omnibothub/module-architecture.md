@@ -118,7 +118,7 @@
 
 合编 6 个子模块，所有 .cpp 直接编译进可执行文件。
 
-#### 5a. `src/` — 主控入口与基础设施
+#### 5a. `src/` — 主控入口与基础设施 → 详见 [module/module-src.md](module/module-src.md)
 
 | 文件 | 功能 |
 |------|------|
@@ -129,7 +129,7 @@
 | `robot_param.cpp` | 加载 YAML 配置（调用 yaml-cpp） |
 | `sys_timer.cpp` | 系统定时器 |
 
-#### 5b. `math_src/` — 数学计算层
+#### 5b. `math_src/` — 数学计算层 → 详见 [module/module-math.md](module/module-math.md)
 
 | 文件 | 功能 |
 |------|------|
@@ -143,7 +143,7 @@
 | `eso_RL.cpp` | RL 专用的 ESO 变体 |
 | `rtGetInf/NaN/rt_nonfinite.cpp` | Simulink RT 代码生成工具函数 |
 
-#### 5c. `vmc_src/` — 运动控制层
+#### 5c. `vmc_src/` — 运动控制层 → 详见 [module/module-vmc.md](module/module-vmc.md)
 
 | 文件 | 功能 |
 |------|------|
@@ -152,7 +152,7 @@
 | `force_imp_controller.cpp` | 力/阻抗混合控制器 |
 | `sdk_api.cpp` | SDK 远程控制 API（大部分为空桩） |
 
-#### 5d. `gait_src/` — 步态行为层
+#### 5d. `gait_src/` — 步态行为层 → 详见 [module/module-gait.md](module/module-gait.md)
 
 | 文件 | 功能 |
 |------|------|
@@ -160,7 +160,7 @@
 | `rl.cpp` | **RL 强化学习步态**（调用 `tvm2.h`，条件编译 `RL_USE_TVM`） |
 | `self_right.cpp` | 自恢复行为（摔倒后站起） |
 
-#### 5e. `Param_Tinker14/` 等 — 配置文件目录
+#### 5e. `Param_Tinker14/` 等 — 配置文件目录 → 详见 [module/module-param.md](module/module-param.md)
 
 | 目录 | 用途 |
 |------|------|
@@ -171,7 +171,7 @@
 
 配置在运行时从 `/home/odroid/Tinker/Param/` 加载（硬编码路径），不参与编译。
 
-#### 5f. `mpc_locomotion/` & `vision_location/` — 预留空目录
+#### 5f. `mpc_locomotion/` & `vision_location/` — 预留空目录 → 详见 [module/module-reserved.md](module/module-reserved.md)
 
 目录存在但无源码，为未来 MPC 运动控制和视觉定位功能预留。
 
