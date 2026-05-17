@@ -1,194 +1,127 @@
-// hopper_sim_ui.cpp —— 1D SLIP 跳跃器查看器
-//   动力学由 sli_1d_model.hpp 中的 cartPoleDynamics 提供（自写积分）
-//   MuJoCo 仅作可视化：mj_forward 只跑前向运动学，不跑物理
-//
-// 鼠标 / 键盘：
-//   左键拖拽 = 旋转视角     右键拖拽 = 平移视角     滚轮 = 缩放
-//   Backspace = 重置仿真     Space = 暂停/继续     ESC = 退出
+// hopper_sim_ui.cpp —— 1D SLIP 跳跃器（基于 simulation_dashboard 外壳）
+//   动力学：cartPoleDynamics (slip_1d_model.hpp) + RK4 自写积分
+//   UI：simulation_dashboard 提供 MuJoCo 视口 + Controls 面板 + Scope 三联曲线 + 可拖动分隔条
 
-#include <mujoco.h>
-#include <glfw3.h>
-#include <cstdio>
-#include <cstring>
-#include <cmath>
-#include <algorithm>
+#include "dashboard.hpp"
 #include "slip_1d_model.hpp"
 
-mjModel* m = nullptr;
-mjData*  d = nullptr;
-mjvCamera  cam;
-mjvOption  opt;
-mjvScene   scn;
-mjrContext con;
+#include <mujoco.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <cstring>
+#include <string>
 
-bool button_left = false, button_middle = false, button_right = false;
-double lastx = 0, lasty = 0;
-bool paused = false;
-
-// ── 初始状态 ────────────────────────────────────────────────────────
-static constexpr double X0  = 2.0;   // 初始高度 [m]
-static constexpr double DX0 = 0.0;   // 初始速度 [m/s]
-
-// ── 自定义动力学状态 ────────────────────────────────────────────────
-// z(0) = 球心高度 x [m]   z(1) = 垂直速度 dx [m/s]
+// ── 仿真状态 ────────────────────────────────────────────────────────
+static double X0  = 2.0;
+static double DX0 = 0.0;
 static Eigen::Vector2d z_state(X0, DX0);
-static double sim_time = 0.0;
 
-// 与 MATLAB 默认参数对齐：m=1kg, l=0.5m (rest), l_min≈球半径
-static const Params P{
-    /* l     */ 0.5,
-    /* l_min */ 0.05,
-    /* kp    */ 800.0,
-    /* kd    */ 5.0,
-    /* m     */ 1.0
-};
-
-// 物理步长（与原 MJCF 的 timestep 一致）
-static constexpr double DT_PHYS = 0.001;
-
-// body "hopper" 的初始世界 z（XML 中 <body pos="0 0 0.5">）
+static Params P{ 0.5, 0.05, 800.0, 5.0, 1.0 };   // l, l_min, kp, kd, m
+static double u_manual = 0.0;
+static double u_limit  = 50.0;
 static double z_body_init = 0.5;
 
-static void reset_state() {
-    z_state << X0, DX0;
-    sim_time = 0.0;
-    if (m && d) {
-        d->qpos[0] = z_state(0) - z_body_init;            // hopper
-        d->qpos[1] = cartPoleKinematics(z_state(0), P);   // foot
-        d->qvel[0] = z_state(1);
-        d->qvel[1] = 0.0;
-        d->time    = 0.0;
-        mj_forward(m, d);
-    }
+static double apply_limit(double u) {
+    return std::max(-u_limit, std::min(u_limit, u));
 }
 
-// 4 阶 Runge-Kutta，u 在子步内保持常数
 static void rk4_step(Eigen::Vector2d& z, double u, const Params& p, double dt) {
-    Eigen::Vector2d k1 = cartPoleDynamics(z,                u, p);
-    Eigen::Vector2d k2 = cartPoleDynamics(z + 0.5*dt*k1,    u, p);
-    Eigen::Vector2d k3 = cartPoleDynamics(z + 0.5*dt*k2,    u, p);
-    Eigen::Vector2d k4 = cartPoleDynamics(z +     dt*k3,    u, p);
+    Eigen::Vector2d k1 = cartPoleDynamics(z,             u, p);
+    Eigen::Vector2d k2 = cartPoleDynamics(z + 0.5*dt*k1, u, p);
+    Eigen::Vector2d k3 = cartPoleDynamics(z + 0.5*dt*k2, u, p);
+    Eigen::Vector2d k4 = cartPoleDynamics(z +     dt*k3, u, p);
     z += (dt / 6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4);
 }
 
-static void keyboard(GLFWwindow* w, int key, int sc, int act, int mods) {
-    if (act != GLFW_PRESS) return;
-    if      (key == GLFW_KEY_BACKSPACE) reset_state();
-    else if (key == GLFW_KEY_SPACE)     paused = !paused;
-    else if (key == GLFW_KEY_ESCAPE)    glfwSetWindowShouldClose(w, GLFW_TRUE);
+static bool sld(const char* label, double* v, double mn, double mx,
+                const char* fmt = "%.3f") {
+    return ImGui::SliderScalar(label, ImGuiDataType_Double, v, &mn, &mx, fmt);
 }
 
-static void mouse_button(GLFWwindow* w, int b, int act, int mods) {
-    button_left   = glfwGetMouseButton(w, GLFW_MOUSE_BUTTON_LEFT)   == GLFW_PRESS;
-    button_middle = glfwGetMouseButton(w, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS;
-    button_right  = glfwGetMouseButton(w, GLFW_MOUSE_BUTTON_RIGHT)  == GLFW_PRESS;
-    glfwGetCursorPos(w, &lastx, &lasty);
-}
-
-static void mouse_move(GLFWwindow* w, double xpos, double ypos) {
-    if (!button_left && !button_middle && !button_right) return;
-    double dx = xpos - lastx, dy = ypos - lasty;
-    lastx = xpos; lasty = ypos;
-    int width, height; glfwGetWindowSize(w, &width, &height);
-    bool shift = (glfwGetKey(w, GLFW_KEY_LEFT_SHIFT)  == GLFW_PRESS ||
-                  glfwGetKey(w, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS);
-    mjtMouse action;
-    if      (button_right)  action = shift ? mjMOUSE_MOVE_H   : mjMOUSE_MOVE_V;
-    else if (button_left)   action = shift ? mjMOUSE_ROTATE_H : mjMOUSE_ROTATE_V;
-    else                    action = mjMOUSE_ZOOM;
-    mjv_moveCamera(m, action, dx/height, dy/height, &scn, &cam);
-}
-
-static void scroll(GLFWwindow* w, double xoff, double yoff) {
-    mjv_moveCamera(m, mjMOUSE_ZOOM, 0, -0.05 * yoff, &scn, &cam);
+static const char* phase_of(double x, const Params& p) {
+    if (x > p.l)     return "FLIGHT";
+    if (x < p.l_min) return "BOTTOM";
+    return "STANCE";
 }
 
 int main() {
-    char err[1024];
-    m = mj_loadXML("model.xml", nullptr, err, sizeof(err));
-    if (!m) { fprintf(stderr, "load: %s\n", err); return 1; }
-    d = mj_makeData(m);
+    sim_dashboard::Config cfg;
+    cfg.title      = "Hopper 1D — SLIP tuner";
+    cfg.model_path = "model.xml";
 
-    int body_id = mj_name2id(m, mjOBJ_BODY, "hopper");
-    if (body_id >= 0) z_body_init = m->body_pos[3*body_id + 2];
+    sim_dashboard::Dashboard dash(cfg);
+    if (!dash.model()) return 1;
 
-    if (!glfwInit()) { fprintf(stderr, "GLFW init failed\n"); return 1; }
-    GLFWwindow* win = glfwCreateWindow(1200, 900, "Hopper 1D (cartPoleDynamics)", nullptr, nullptr);
-    if (!win) { fprintf(stderr, "GLFW window failed (DISPLAY OK?)\n"); glfwTerminate(); return 1; }
-    glfwMakeContextCurrent(win);
-    glfwSwapInterval(1);
-
-    mjv_defaultCamera(&cam);
-    mjv_defaultOption(&opt);
-    mjv_defaultScene(&scn);
-    mjr_defaultContext(&con);
-    mjv_makeScene(m, &scn, 2000);
-    mjr_makeContext(m, &con, mjFONTSCALE_150);
-
-    cam.distance  = 1.8;
-    cam.azimuth   = 90;
-    cam.elevation = -15;
-    cam.lookat[0] = 0; cam.lookat[1] = 0; cam.lookat[2] = 0.4;
-
-    glfwSetKeyCallback        (win, keyboard);
-    glfwSetCursorPosCallback  (win, mouse_move);
-    glfwSetMouseButtonCallback(win, mouse_button);
-    glfwSetScrollCallback     (win, scroll);
-
-    reset_state();   // 让 MuJoCo 显示与 z_state 一致的初始位姿
-
-    char status[256];
-    double wall_prev = glfwGetTime();
-    while (!glfwWindowShouldClose(win)) {
-        // wall-clock 推进：避免虚拟显示下 vsync 失效仿真飙速
-        double wall_now = glfwGetTime();
-        double dt_wall  = wall_now - wall_prev;
-        wall_prev = wall_now;
-        if (dt_wall > 0.1) dt_wall = 0.1;
-
-        if (!paused) {
-            int n_sub = std::max(1, (int)std::round(dt_wall / DT_PHYS));
-            for (int i = 0; i < n_sub; ++i) {
-                rk4_step(z_state, 0.0 /* u */, P, DT_PHYS);
-                sim_time += DT_PHYS;
-            }
-            // 把 cartPoleDynamics / cartPoleKinematics 的输出写回 MuJoCo
-            d->qpos[0] = z_state(0) - z_body_init;            // hopper
-            d->qpos[1] = cartPoleKinematics(z_state(0), P);   // foot
-            d->qvel[0] = z_state(1);
-            d->qvel[1] = 0.0;
-            d->time    = sim_time;
-            mj_forward(m, d);          // 只跑运动学，不跑物理
-        }
-
-        mjrRect viewport = {0, 0, 0, 0};
-        glfwGetFramebufferSize(win, &viewport.width, &viewport.height);
-        mjv_updateScene(m, d, &opt, nullptr, &cam, mjCAT_ALL, &scn);
-        mjr_render(viewport, &scn, &con);
-
-        // —— 状态文字 ——
-        const char* phase =
-            z_state(0) > P.l        ? "FLIGHT"   :
-            z_state(0) < P.l_min    ? "BOTTOM"   :
-                                      "STANCE";
-        snprintf(status, sizeof(status),
-                 "t = %.2f s   x = %.3f m   dx = %+.3f m/s   phase = %s   %s",
-                 sim_time, z_state(0), z_state(1), phase,
-                 paused ? "[PAUSED]" : "");
-        mjr_overlay(mjFONT_NORMAL, mjGRID_TOPLEFT, viewport, status, nullptr, &con);
-        mjr_overlay(mjFONT_NORMAL, mjGRID_BOTTOMLEFT, viewport,
-                    "[SPACE] pause  [BS] reset  [ESC] quit\n"
-                    "L-drag rotate  R-drag pan  scroll zoom",
-                    nullptr, &con);
-
-        glfwSwapBuffers(win);
-        glfwPollEvents();
+    // 读 MJCF 里 hopper body 的初始世界 z（XML 写 0.5）
+    if (mjModel* m = dash.model()) {
+        int id = mj_name2id(m, mjOBJ_BODY, "hopper");
+        if (id >= 0) z_body_init = m->body_pos[3*id + 2];
     }
 
-    mjv_freeScene(&scn);
-    mjr_freeContext(&con);
-    mj_deleteData(d);
-    mj_deleteModel(m);
-    glfwTerminate();
-    return 0;
+    // ── 注册曲线（X 共享 t） ──
+    auto cv_x  = dash.add_curve("x [m]",      IM_COL32(255, 200,  80, 255));
+    auto cv_dx = dash.add_curve("dx [m/s]",   IM_COL32( 80, 200, 255, 255));
+    auto cv_u  = dash.add_curve("u [m/s^2]",  IM_COL32(255, 120, 200, 255));
+
+    // ── 回调 ──
+    dash.on_reset([&]{
+        z_state << X0, DX0;
+    });
+
+    dash.on_step([&](double dt){
+        double u_cmd = apply_limit(u_manual);
+        rk4_step(z_state, u_cmd, P, dt);
+        dash.push(cv_x,  (float)z_state(0));
+        dash.push(cv_dx, (float)z_state(1));
+        dash.push(cv_u,  (float)u_cmd);
+    });
+
+    dash.on_sync([&](mjModel* m, mjData* d){
+        d->qpos[0] = z_state(0) - z_body_init;            // hopper slide
+        d->qpos[1] = cartPoleKinematics(z_state(0), P);   // foot slide
+        d->qvel[0] = z_state(1);
+        d->qvel[1] = 0.0;
+        mj_forward(m, d);
+    });
+
+    dash.on_controls([&]{
+        ImGui::Text("phase = %s", phase_of(z_state(0), P));
+        ImGui::Text("x = %.4f m   dx = %+.4f m/s", z_state(0), z_state(1));
+
+        ImGui::Separator();
+        ImGui::TextUnformatted("Spring & body");
+        sld("kp [N/m]",  &P.kp,    10.0, 5000.0, "%.1f");
+        sld("kd [Ns/m]", &P.kd,    0.0,  50.0,   "%.2f");
+        sld("l (rest)",  &P.l,     0.2,  1.0);
+        sld("l_min",     &P.l_min, 0.01, 0.2);
+        sld("m [kg]",    &P.m,     0.1,  10.0,   "%.2f");
+
+        ImGui::Separator();
+        ImGui::TextUnformatted("Control input");
+        sld("u [m/s^2]", &u_manual, -100.0, 100.0, "%.2f");
+        sld("|u| limit", &u_limit,  0.0,    200.0, "%.1f");
+        if (ImGui::Button("u = 0")) u_manual = 0.0;
+
+        ImGui::Separator();
+        ImGui::TextUnformatted("Initial state (apply on Reset)");
+        sld("X0 [m]",    &X0,  0.1,  5.0,  "%.2f");
+        sld("DX0 [m/s]", &DX0, -5.0, 5.0,  "%.2f");
+
+        ImGui::Separator();
+        double x_eq = P.l - 9.81 * P.m / P.kp;
+        ImGui::Text("x_eq = l - g*m/kp = %.4f m", x_eq);
+        ImGui::Text("(static equilibrium)");
+    });
+
+    dash.on_status([&]{
+        char buf[256];
+        std::snprintf(buf, sizeof(buf),
+                      "t=%.2fs  x=%.3fm  dx=%+.3fm/s  phase=%s",
+                      dash.sim_time(), z_state(0), z_state(1),
+                      phase_of(z_state(0), P));
+        return std::string(buf);
+    });
+
+    return dash.run();
 }

@@ -67,6 +67,65 @@ message(STATUS "Eigen3 = ${EIGEN3_INCLUDE_DIR} (version ${EIGEN3_VERSION_STRING}
 set(CMAKE_INSTALL_RPATH "${MUJOCO_DIR}/bin")
 set(CMAKE_BUILD_RPATH   "${MUJOCO_DIR}/bin")
 
-# ── 3. 接入各子项目 ────────────────────────────────────────────────
+# ── 3. ImGui + ImPlot（FetchContent，首跑会从 github 拉源码） ─────
+include(FetchContent)
+set(FETCHCONTENT_QUIET OFF)
+
+FetchContent_Declare(imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG        v1.91.5
+    GIT_SHALLOW    TRUE
+)
+FetchContent_Declare(implot
+    GIT_REPOSITORY https://github.com/epezent/implot.git
+    GIT_TAG        v0.16
+    GIT_SHALLOW    TRUE
+)
+FetchContent_MakeAvailable(imgui implot)
+
+# NLopt（slip_1d_trajopt 用，SLSQP 求解直接配点 NLP）
+FetchContent_Declare(nlopt
+    GIT_REPOSITORY https://github.com/stevengj/nlopt.git
+    GIT_TAG        v2.7.1
+    GIT_SHALLOW    TRUE
+)
+set(NLOPT_PYTHON  OFF CACHE BOOL "" FORCE)
+set(NLOPT_OCTAVE  OFF CACHE BOOL "" FORCE)
+set(NLOPT_MATLAB  OFF CACHE BOOL "" FORCE)
+set(NLOPT_GUILE   OFF CACHE BOOL "" FORCE)
+set(NLOPT_SWIG    OFF CACHE BOOL "" FORCE)
+set(NLOPT_TESTS   OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(nlopt)
+
+# MuJoCo 自带的 glfw3.h 在 include 根目录下；imgui_impl_glfw 期待 <GLFW/glfw3.h>，做个 shim
+set(GLFW_SHIM_DIR ${CMAKE_BINARY_DIR}/_glfw_shim)
+file(WRITE ${GLFW_SHIM_DIR}/GLFW/glfw3.h "#pragma once\n#include <glfw3.h>\n")
+
+add_library(imgui_backend STATIC
+    ${imgui_SOURCE_DIR}/imgui.cpp
+    ${imgui_SOURCE_DIR}/imgui_draw.cpp
+    ${imgui_SOURCE_DIR}/imgui_tables.cpp
+    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+    ${imgui_SOURCE_DIR}/imgui_demo.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+    ${implot_SOURCE_DIR}/implot.cpp
+    ${implot_SOURCE_DIR}/implot_items.cpp
+)
+target_include_directories(imgui_backend PUBLIC
+    ${imgui_SOURCE_DIR}
+    ${imgui_SOURCE_DIR}/backends
+    ${implot_SOURCE_DIR}
+    ${GLFW_SHIM_DIR}
+    ${MUJOCO_DIR}/include
+)
+target_link_libraries(imgui_backend PUBLIC mujoco::glfw OpenGL::GL)
+
+# ── 4. 通用面板外壳 ────────────────────────────────────────────────
+add_subdirectory(simulation_dashboard)
+
+# ── 5. 接入各子项目 ────────────────────────────────────────────────
 add_subdirectory(slip_1d)
+add_subdirectory(slip_1d_trajopt)
 # 新例子在此 add_subdirectory(<name>) 即可
