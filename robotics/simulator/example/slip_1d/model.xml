@@ -1,0 +1,56 @@
+<!--
+  1D SLIP 跳跃器 MJCF（仅可视化用，物理由 cartPoleDynamics 驱动）
+    - slide 关节沿 z 轴控制质心高度 x
+    - tendon "spring" 连接地面锚点(foot) 与 质心底部(top)，自动跟随 x 变化
+    - 物理参数（kp/kd/m/l）见 sli_1d_model 的 Params；本文件不参与物理积分
+-->
+<mujoco model="slip_1d">
+  <option gravity="0 0 -9.81" timestep="0.001"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.4 0.4 0.4" specular="0.2 0.2 0.2"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0"
+             width="512" height="512"/>
+    <texture name="grid" type="2d" builtin="checker" rgb1="0.1 0.2 0.3"
+             rgb2="0.2 0.3 0.4" width="300" height="300" mark="edge" markrgb=".2 .3 .4"/>
+    <material name="grid" texture="grid" texrepeat="2 2" texuniform="true"
+              reflectance="0.2"/>
+  </asset>
+
+  <worldbody>
+    <geom name="floor" type="plane" size="2 2 0.05" material="grid"/>
+
+    <!-- 质心球 -->
+    <body name="hopper" pos="0 0 0.5">
+      <joint name="z" type="slide" axis="0 0 1" damping="0"/>
+      <geom name="ball" type="sphere" size="0.05" mass="1.0"
+            rgba="1.0 0.3 0.3 1"/>
+      <site name="top" pos="0 0 -0.05" size="0.02" rgba="0.9 0.7 0.1 1"/>
+    </body>
+
+    <!-- 脚：第二个 body，沿 z 滑动；初始放在地面 -->
+    <body name="foot_body" pos="0 0 0">
+      <joint name="z_foot" type="slide" axis="0 0 1" damping="0"
+             limited="false"/>
+      <geom name="foot_geom" type="sphere" size="0.025"
+            rgba="0.9 0.7 0.1 1" mass="0.001"/>
+      <site name="foot" pos="0 0 0" size="0.025" rgba="0.9 0.7 0.1 1"/>
+    </body>
+  </worldbody>
+
+  <!-- 可视化弹簧（一段 spatial tendon，宽度固定，长度跟随两 site 距离） -->
+  <tendon>
+    <spatial name="spring" width="0.025" rgba="0.2 0.7 1.0 1">
+      <site site="foot"/>
+      <site site="top"/>
+    </spatial>
+  </tendon>
+
+  <actuator>
+    <motor name="u" joint="z" gear="1" ctrllimited="true" ctrlrange="-50 50"/>
+  </actuator>
+</mujoco>
