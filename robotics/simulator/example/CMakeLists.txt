@@ -128,4 +128,5 @@ add_subdirectory(simulation_dashboard)
 # ── 5. 接入各子项目 ────────────────────────────────────────────────
 add_subdirectory(slip_1d)
 add_subdirectory(slip_1d_trajopt)
+add_subdirectory(slip_2d)
 # 新例子在此 add_subdirectory(<name>) 即可

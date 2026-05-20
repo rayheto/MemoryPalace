@@ -1,0 +1,54 @@
+<!--
+  2D-SLIP（事件触发 RK4）的 MuJoCo 可视化模型
+  - 物理由外部 slip2d::Sim2D 驱动；MuJoCo 仅负责渲染
+  - body：bx/bz 两个 slide 关节，沿 X / Z 平移（绕 Y 平面运动）
+  - foot：fx/fz 两个 slide 关节，每帧由 on_sync teleport 到正确位置
+  - leg ：连接 body 底 site 和 foot site 的 spatial tendon，长度自动跟随
+  - 无 actuator
+-->
+<mujoco model="slip_2d">
+  <option gravity="0 0 -9.81" timestep="0.001"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.4 0.4 0.4" specular="0.2 0.2 0.2"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0"
+             width="512" height="512"/>
+    <texture name="grid" type="2d" builtin="checker" rgb1="0.1 0.2 0.3"
+             rgb2="0.2 0.3 0.4" width="300" height="300" mark="edge" markrgb=".2 .3 .4"/>
+    <material name="grid" texture="grid" texrepeat="4 4" texuniform="true"
+              reflectance="0.2"/>
+  </asset>
+
+  <worldbody>
+    <geom name="floor" type="plane" pos="0 0 0" size="6 1 0.05" material="grid"/>
+
+    <!-- 质心球 -->
+    <body name="hopper" pos="0 0 1">
+      <joint name="bx" type="slide" axis="1 0 0" damping="0"/>
+      <joint name="bz" type="slide" axis="0 0 1" damping="0"/>
+      <geom name="ball" type="sphere" size="0.06" mass="1.0"
+            rgba="1.0 0.3 0.3 1"/>
+      <site name="top" pos="0 0 -0.06" size="0.02" rgba="0.9 0.7 0.1 1"/>
+    </body>
+
+    <!-- 足端 -->
+    <body name="foot_body" pos="0 0 0">
+      <joint name="fx" type="slide" axis="1 0 0" damping="0" limited="false"/>
+      <joint name="fz" type="slide" axis="0 0 1" damping="0" limited="false"/>
+      <geom name="foot_geom" type="sphere" size="0.03" mass="0.001"
+            rgba="0.9 0.7 0.1 1"/>
+      <site name="foot" pos="0 0 0" size="0.025" rgba="0.9 0.7 0.1 1"/>
+    </body>
+  </worldbody>
+
+  <tendon>
+    <spatial name="spring" width="0.025" rgba="0.2 0.7 1.0 1">
+      <site site="foot"/>
+      <site site="top"/>
+    </spatial>
+  </tendon>
+</mujoco>
