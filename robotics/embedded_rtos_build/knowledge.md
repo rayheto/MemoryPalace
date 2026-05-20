@@ -12,6 +12,7 @@
 | 任务间通信 | [ipc.md](ipc.md) | `xQueueGenericSend`/`xQueueReceive` 源码、队列/信号量/事件组/任务通知性能对比 |
 | DMA 原理与配置 | [dma.md](dma.md) | DMA 控制器架构、双缓冲/乒乓缓冲模式、DMA+中断配合、STM32 典型配置 |
 | 内存与栈管理 | [memory_and_stack.md](memory_and_stack.md) | Heap_1~Heap_5 源码分析、栈溢出检测 `configCHECK_FOR_STACK_OVERFLOW`、堆与栈区别、看门狗策略 |
+| ESP32 SDMMC/PSRAM 对齐踩坑 | [esp32_sdmmc_psram_alignment.md](esp32_sdmmc_psram_alignment.md) | FATFS 内嵌缓冲未 cache-line 对齐 → SDMMC 慢路径 → DMA SRAM 耗尽 → SDIO + MJPEG + pthread 雪崩；`__builtin_return_address` + 限流统计排查法；`CONFIG_FATFS_USE_DYN_BUFFERS` 修复 |
 
 ## CMake 构建系统
 
