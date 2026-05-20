@@ -123,7 +123,7 @@ static void equality_constraints(unsigned m, double* result,
         const int ix = 4 + 2 * k;       // x defect row
         const int iv = 4 + 2 * k + 1;   // v defect row
 
-        // defect_x = x_{k+1} - x_k - (h/2)(dx_k + dx_{k+1})
+        // 位移缺陷: defect_x = x_{k+1} - x_k - (h/2)(dx_k + dx_{k+1})
         result[ix] = xk1 - xk - 0.5 * h * (dxk + dxk1);
         if (grad) {
             J(ix, L.X(k))     += -1.0;
@@ -133,7 +133,7 @@ static void equality_constraints(unsigned m, double* result,
             J(ix, L.IT())     += -0.5 * (1.0 / (double)N) * (dxk + dxk1);
         }
 
-        // defect_v = dx_{k+1} - dx_k - (h/2)(a_k + a_{k+1})
+        // 速度缺陷: defect_v = dx_{k+1} - dx_k - (h/2)(a_k + a_{k+1})
         result[iv] = dxk1 - dxk - 0.5 * h * (ak + ak1);
         if (grad) {
             // ∂a_k/∂x_k = -alpha, ∂a_k/∂dx_k = -kd, ∂a_k/∂u_k = 1
