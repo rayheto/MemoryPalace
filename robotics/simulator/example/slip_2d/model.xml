@@ -43,6 +43,75 @@
             rgba="0.9 0.7 0.1 1"/>
       <site name="foot" pos="0 0 0" size="0.025" rgba="0.9 0.7 0.1 1"/>
     </body>
+
+    <!-- 地形 box tile：上限 64，运行时通过 m->geom_pos / geom_size 改写
+         切换地形类型时全部 reset 到 z=0（即"藏起来"）后再贴上 polyline 段。 -->
+    <body name="terrain_tiles" pos="0 0 0">
+      <geom name="t00" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t01" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t02" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t03" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t04" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t05" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t06" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t07" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t08" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t09" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t10" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t11" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t12" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t13" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t14" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t15" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t16" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t17" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t18" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t19" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t20" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t21" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t22" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t23" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t24" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t25" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t26" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t27" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t28" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t29" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t30" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t31" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t32" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t33" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t34" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t35" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t36" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t37" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t38" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t39" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t40" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t41" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t42" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t43" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t44" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t45" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t46" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t47" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t48" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t49" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t50" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t51" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t52" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t53" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t54" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t55" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t56" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t57" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t58" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t59" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t60" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t61" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t62" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+      <geom name="t63" type="box" size="0.1 0.5 0.001" pos="0 0 -10" rgba="0.55 0.55 0.60 1" contype="0" conaffinity="0"/>
+    </body>
   </worldbody>
 
   <tendon>

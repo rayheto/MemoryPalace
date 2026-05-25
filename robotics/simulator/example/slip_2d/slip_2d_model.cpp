@@ -15,11 +15,13 @@ double Terrain::height(double x_world) const {
     }
     double x0 = profile[lo].x(), x1 = profile[hi].x();
     double y0 = profile[lo].y(), y1 = profile[hi].y();
-    double w = (x_world - x0) / (x1 - x0);
+    double dx = x1 - x0;
+    if (dx < 1e-12) return y1;          // 竖直边沿（edge_len 极小）
+    double w = (x_world - x0) / dx;
     return (1.0 - w) * y0 + w * y1;
 }
 
-State dynamics(Phase ph, const State& q, const Params2D& P) {
+State dynamics(Phase ph, const State& q, const Params2D& P, double u_stance) {
     State dq = State::Zero();
     dq(0) = q(2);
     dq(1) = q(3);
@@ -29,27 +31,26 @@ State dynamics(Phase ph, const State& q, const Params2D& P) {
     } else {
         // 局部坐标下「弹簧向量」= (x, y)，长度 l1，方向沿 q
         double l1 = std::hypot(q(0), q(1));
-        if (l1 < 1e-9) l1 = 1e-9;   // 兜底，避免 0 除
-        double u  = P.Kp_z * (P.l0 + P.fly_z - q(1));
-        double a1 = P.k * (P.l0 - l1) / P.m + u;
+        if (l1 < 1e-9) l1 = 1e-9;       // 兜底，避免 0 除
+        double a1 = P.k * (P.l0 - l1) / P.m + u_stance;
         dq(2) = a1 / l1 * q(0);
         dq(3) = a1 / l1 * q(1) - P.kd * q(3) - P.g;
     }
-    dq(4) = 0.0;                    // α 仅在触地瞬间被外部 rebase
     return dq;
 }
 
-Eigen::Vector2d foot_rel(const State& q, const Params2D& P) {
-    return { q(0) + P.l0 * std::cos(q(4)),
-             q(1) - P.l0 * std::sin(q(4)) };
+Eigen::Vector2d foot_rel(const State& q, double alpha, const Params2D& P) {
+    return { q(0) + P.l0 * std::cos(alpha),
+             q(1) - P.l0 * std::sin(alpha) };
 }
 
-// 单步 RK4
-static State rk4(Phase ph, const State& q0, double dt, const Params2D& P) {
-    State k1 = dynamics(ph, q0,                 P);
-    State k2 = dynamics(ph, q0 + 0.5 * dt * k1, P);
-    State k3 = dynamics(ph, q0 + 0.5 * dt * k2, P);
-    State k4 = dynamics(ph, q0 +       dt * k3, P);
+// 单步 RK4（u_stance ZOH）
+static State rk4(Phase ph, const State& q0, double dt,
+                 const Params2D& P, double u) {
+    State k1 = dynamics(ph, q0,                 P, u);
+    State k2 = dynamics(ph, q0 + 0.5 * dt * k1, P, u);
+    State k3 = dynamics(ph, q0 + 0.5 * dt * k2, P, u);
+    State k4 = dynamics(ph, q0 +       dt * k3, P, u);
     return q0 + (dt / 6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4);
 }
 
@@ -61,15 +62,26 @@ static bool crossed(double g0, double g1, int dir) {
     return (g0 > 0.0) != (g1 > 0.0);
 }
 
+// MATLAB §1.3.2 的「if y<0 && ddy<0 then dy=ddy=0」效果：
+// RK4 出步后若质心被压到支撑点之下且仍在下沉，把竖直分量回弹至上一拍。
+static void compression_clamp(const State& q0, State& q1) {
+    if (q1(1) < 0.0 && q1(1) < q0(1)) {
+        q1(1) = q0(1);
+        q1(3) = 0.0;
+    }
+}
+
 StepOut rk4_step_with_events(Phase ph,
                              const State& q0,
                              double t0,
                              double dt,
                              const Params2D& P,
+                             double u_stance,
                              const std::vector<Guard>& guards,
                              double tol)
 {
-    State q1 = rk4(ph, q0, dt, P);
+    State q1 = rk4(ph, q0, dt, P, u_stance);
+    if (ph == Phase::Stance) compression_clamp(q0, q1);
 
     // 收集候选事件
     std::vector<int> cand;
@@ -88,7 +100,8 @@ StepOut rk4_step_with_events(Phase ph,
     int winner = cand.front();
     while (hi - lo > tol) {
         double mid = 0.5 * (lo + hi);
-        State qm = rk4(ph, q0, mid, P);
+        State qm = rk4(ph, q0, mid, P, u_stance);
+        if (ph == Phase::Stance) compression_clamp(q0, qm);
         int hit = -1;
         for (int k : cand) {
             double g0 = guards[k].g(q0);
@@ -98,7 +111,8 @@ StepOut rk4_step_with_events(Phase ph,
         if (hit >= 0) { hi = mid; winner = hit; }
         else          { lo = mid; }
     }
-    State qe = rk4(ph, q0, hi, P);
+    State qe = rk4(ph, q0, hi, P, u_stance);
+    if (ph == Phase::Stance) compression_clamp(q0, qe);
     return { qe, t0 + hi, winner };
 }
 

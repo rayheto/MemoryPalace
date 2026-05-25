@@ -3,14 +3,19 @@
 // 2D-SLIP（单腿支撑）动力学 + 地形 + RK4 + 事件触发（zero-crossing terminating）
 // 对应 MATLAB ode45 + odeset('Events',…) 那一套，C++ 自写最小实现，无新依赖。
 //
-// 状态 q = [x, y, dx, dy, alpha]      x,y,dx,dy 都是「相对当前支撑点 p0」的局部坐标
-// 全局位姿 (x0+x, y0+y)，alpha = 腿与地面夹角（rad，π/2 即腿垂直机体正下方）
+// §1.3.2 重构后：
+//   - State = [x, y, dx, dy] (4 维)，全部为「相对当前支撑点 p0」的局部坐标
+//     腿角 α 不再属于积分变量（dα/dt=0 在 RK4 中纯属负担），改由 Sim2D 在
+//     touchdown 事件时直接采样、由 swing_angle() 给 viewport 插值
+//   - 控制器与动力学解耦：dynamics(...) 收 u_stance 实参，由调用方 ZOH 注入
+//     Kp_z / fly_z 从 Params2D 迁到 Controller
+//   - 压缩极限保护：rk4_step_with_events() 在 RK4 后 post-clamp，
+//     若 q.y<0 且仍在下沉则把 dy 清零（对齐 MATLAB `if y<0; dy=ddy=0`）
 //
 // 两套动力学：
-//   Flight :  ddx=0, ddy=-g, dα/dt=0
+//   Flight :  ddx=0, ddy=-g
 //   Stance :  l1 = sqrt(x²+y²)
-//             u  = Kp_z*(l0+fly_z - y)          // 可选 Raibert 高度反馈
-//             a1 = k*(l0-l1)/m + u
+//             a1 = k*(l0-l1)/m + u_stance      ← u 由外部注入
 //             ddx = a1/l1 * x
 //             ddy = a1/l1 * y - kd*dy - g
 //
@@ -26,7 +31,7 @@
 
 namespace slip2d {
 
-using State = Eigen::Matrix<double, 5, 1>;   // [x, y, dx, dy, alpha(rad)]
+using State = Eigen::Matrix<double, 4, 1>;   // [x, y, dx, dy]
 
 struct Params2D {
     double l0    = 1.0;        // 弹簧原长
@@ -34,8 +39,6 @@ struct Params2D {
     double m     = 1.0;        // 质量
     double kd    = 1.0;        // 支撑相竖直阻尼
     double g     = 9.81;
-    double Kp_z  = 0.0;        // Raibert 高度控制增益（=0 即被动）
-    double fly_z = 0.0;        // 期望弹跳高度偏移
 };
 
 struct Terrain {
@@ -45,10 +48,11 @@ struct Terrain {
 
 enum class Phase { Flight, Stance };
 
-State dynamics(Phase ph, const State& q, const Params2D& P);
+// u_stance：支撑相注入力（飞行相忽略），由 Controller 在 RK4 步前算好（ZOH）
+State dynamics(Phase ph, const State& q, const Params2D& P, double u_stance);
 
 // 局部坐标系下足端位置：(x + l0*cosα,  y - l0*sinα)
-Eigen::Vector2d foot_rel(const State& q, const Params2D& P);
+Eigen::Vector2d foot_rel(const State& q, double alpha, const Params2D& P);
 
 // 事件守卫：g(q) 在 [t0, t0+dt] 内沿 direction 方向过零 ⇒ 终止该段积分
 struct Guard {
@@ -63,12 +67,14 @@ struct StepOut {
     int    event_idx = -1;     // -1 = 未触发
 };
 
-// 一步 RK4 + 事件检测；若 [q0, q1] 之间有 guard 沿匹配方向过零 ⇒ 二分细化定位事件时刻
+// 一步 RK4 + 事件检测 + 压缩极限 post-clamp。
+// u_stance 在该步整段视为常量（ZOH，对齐 MATLAB ode45 stage 行为）。
 StepOut rk4_step_with_events(Phase ph,
                              const State& q0,
                              double t0,
                              double dt,
                              const Params2D& P,
+                             double u_stance,
                              const std::vector<Guard>& guards,
                              double tol = 1e-6);
 
