@@ -165,7 +165,7 @@ IROS 上"60% 的 stance 比"对应的绝对宽度是 0.12m，**仍大于髋宽 0
 - **Tinker 训练**：继续走 `trot_pattern + tracking_lin_vel` 路线，**保留宽 stance 作为侧向稳定先验**
 - **LIPM/XCoM 训练**：仅在 IROS2024 仓库（MIT Humanoid），resume 命令见 `~/.claude/projects/.../memory/reference_iros2024_checkpoints.md`
 - **SLIP 替代 LIPM 实验**：按 [`~/MemoryPalace/robotics/simulator/SLIP_3D_replace_LIPM_debug.md`](file:///home/hlei/MemoryPalace/robotics/simulator/SLIP_3D_replace_LIPM_debug.md) §7，**在 IROS2024 框架做增量替换，不在 Tinker 上做**
-- **Tinker 若未来需要落脚点级规划**：考虑非 LIPM 的方案（Raibert heuristic + capture point + 显式 reach clamp、或者直接学习式 footstep policy），避开 LIPM 的"stance 比例"陷阱
+- **Tinker 落脚点 reference 的正式后续方向 → RL + MPC/WBC 混合**：用 Crocoddyl / OCS2 / DCM-MPC 这类**显式带 reach 与可达性约束**的优化器替代 LIPM 解析公式，规划阶段就不会落入"钢丝步态"窗口。完整论证、选型表与切入路线见 [`RL_MPC_hybrid_reference.md`](RL_MPC_hybrid_reference.md)。
 
 ---
 
