@@ -20,3 +20,7 @@
 
 - **PREEMPT_RT:** [https://wiki.linuxfoundation.org/realtime/](https://wiki.linuxfoundation.org/realtime/)
 - **OpenAMP (跨核通信):** [https://www.openampproject.org/](https://www.openampproject.org/)![[OpenAMP-Elevator-Pitch-2025-Q1.pdf]]
+
+## BLOG
+
+- **jelasin:** [https://jelasin.github.io/2026/05/28/Linux%E5%86%85%E6%A0%B8%E5%88%86%E6%9E%90%E4%B9%8B%E6%80%BB%E8%A7%88/](https://jelasin.github.io/2026/05/28/Linux%E5%86%85%E6%A0%B8%E5%88%86%E6%9E%90%E4%B9%8B%E6%80%BB%E8%A7%88/)![[jelasin个人博客]]
