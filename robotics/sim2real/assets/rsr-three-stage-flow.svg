@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 430" role="img" aria-labelledby="title desc">
+  <title id="title">Real2Sim2Real three-stage flow</title>
+  <desc id="desc">Real scene reconstruction, simulation fine-tuning, and transfer back to the real robot.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#2563eb"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#172033}.title{font-size:28px;font-weight:700}.body{font-size:21px}.small{font-size:18px;fill:#475569}
+      .box{fill:#f8fafc;stroke:#94a3b8;stroke-width:2}
+    </style>
+  </defs>
+  <rect width="1050" height="430" fill="#fff"/>
+  <text x="55" y="55" class="title">Real2Sim2Real：真实 → 仿真 → 真实</text>
+  <g transform="translate(70 105)">
+    <rect width="250" height="210" rx="16" class="box"/><text x="62" y="42" class="body" font-weight="700">1. Real2Sim</text>
+    <rect x="45" y="75" width="70" height="55" fill="#fde68a"/><rect x="135" y="75" width="70" height="55" fill="#dbeafe"/><line x1="115" y1="102" x2="135" y2="102" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/>
+    <text x="42" y="165" class="small">扫描 / 重建 / 数字孪生</text>
+  </g>
+  <line x1="345" y1="210" x2="445" y2="210" stroke="#2563eb" stroke-width="5" marker-end="url(#arrow)"/>
+  <g transform="translate(470 105)">
+    <rect width="250" height="210" rx="16" class="box"/><text x="30" y="42" class="body" font-weight="700">2. Simulation Training</text>
+    <rect x="64" y="78" width="122" height="88" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <circle cx="95" cy="122" r="14" fill="#2563eb"/><circle cx="132" cy="122" r="14" fill="#22c55e"/><circle cx="168" cy="122" r="14" fill="#f97316"/>
+    <text x="48" y="190" class="small">大规模 RL / 策略微调</text>
+  </g>
+  <line x1="745" y1="210" x2="845" y2="210" stroke="#2563eb" stroke-width="5" marker-end="url(#arrow)"/>
+  <g transform="translate(870 105)">
+    <rect width="130" height="210" rx="16" class="box"/><text x="17" y="42" class="body" font-weight="700">3. Sim2Real</text>
+    <path d="M35 130 C55 85 90 85 105 130" fill="none" stroke="#0f766e" stroke-width="7"/><circle cx="35" cy="130" r="10" fill="#0f766e"/><circle cx="105" cy="130" r="10" fill="#0f766e"/>
+    <text x="18" y="190" class="small">部署到真机</text>
+  </g>
+</svg>

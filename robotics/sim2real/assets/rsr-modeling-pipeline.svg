@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 520" role="img" aria-labelledby="title desc">
+  <title id="title">RSR modeling pipeline</title>
+  <desc id="desc">Simulation dataset generation, surrogate modeling, and gradient-based refinement.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#2563eb"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#172033}.title{font-size:28px;font-weight:700}.body{font-size:20px}.small{font-size:17px;fill:#475569}
+      .stage{fill:#f8fafc;stroke:#94a3b8;stroke-width:2}.sim{fill:#dcfce7;stroke:#16a34a;stroke-width:2}.net{fill:#ffedd5;stroke:#f97316;stroke-width:2}
+    </style>
+  </defs>
+  <rect width="1280" height="520" fill="#fff"/>
+  <text x="55" y="55" class="title">RSR 中的建模结构：用真实数据反推仿真参数</text>
+  <g transform="translate(60 105)">
+    <rect width="330" height="315" rx="16" class="stage"/><text x="48" y="38" class="body" font-weight="700">Simulation Dataset Generation</text>
+    <text x="45" y="95" class="body">(f, p, d)</text><text x="45" y="145" class="body">a<tspan baseline-shift="sub" font-size="14">t-1</tspan></text><text x="45" y="195" class="body">S<tspan baseline-shift="sub" font-size="14">t-1</tspan></text>
+    <rect x="165" y="105" width="110" height="70" rx="10" class="sim"/><text x="181" y="148" class="body">Simulator</text>
+    <line x1="105" y1="92" x2="165" y2="120" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/><line x1="105" y1="142" x2="165" y2="140" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/><line x1="105" y1="192" x2="165" y2="160" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/>
+    <line x1="275" y1="140" x2="315" y2="140" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/><text x="285" y="118" class="body">P<tspan baseline-shift="sub" font-size="14">t</tspan></text>
+  </g>
+  <line x1="420" y1="260" x2="500" y2="260" stroke="#2563eb" stroke-width="5" marker-end="url(#arrow)"/>
+  <g transform="translate(530 105)">
+    <rect width="330" height="315" rx="16" class="stage"/><text x="76" y="38" class="body" font-weight="700">Surrogate Modelling</text>
+    <rect x="110" y="78" width="120" height="170" rx="14" class="net"/>
+    <circle cx="140" cy="115" r="14" fill="#fff" stroke="#64748b" stroke-width="2"/><circle cx="140" cy="165" r="14" fill="#fff" stroke="#64748b" stroke-width="2"/><circle cx="140" cy="215" r="14" fill="#fff" stroke="#64748b" stroke-width="2"/>
+    <circle cx="200" cy="120" r="14" fill="#fff" stroke="#64748b" stroke-width="2"/><circle cx="200" cy="180" r="14" fill="#fff" stroke="#64748b" stroke-width="2"/><circle cx="200" cy="235" r="14" fill="#fff" stroke="#64748b" stroke-width="2"/>
+    <line x1="230" y1="165" x2="285" y2="165" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/><text x="250" y="140" class="body">P<tspan baseline-shift="sub" font-size="14">t</tspan>*</text>
+    <text x="62" y="285" class="small">用神经网络拟合仿真器输入输出</text>
+  </g>
+  <line x1="890" y1="260" x2="970" y2="260" stroke="#2563eb" stroke-width="5" marker-end="url(#arrow)"/>
+  <g transform="translate(1000 105)">
+    <rect width="230" height="315" rx="16" class="stage"/><text x="28" y="38" class="body" font-weight="700">Gradient Refinement</text>
+    <rect x="35" y="80" width="160" height="44" rx="8" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/><text x="70" y="109" class="body">(f,p,d)</text>
+    <rect x="55" y="160" width="120" height="90" rx="12" class="net"/><text x="86" y="212" class="body">Model</text>
+    <line x1="115" y1="124" x2="115" y2="160" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/>
+    <text x="50" y="285" class="small">对齐真实数据 S<tspan baseline-shift="sub" font-size="12">t</tspan>，更新参数</text>
+  </g>
+</svg>

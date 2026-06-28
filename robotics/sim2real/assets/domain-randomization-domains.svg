@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" role="img" aria-labelledby="title desc">
+  <title id="title">Domain randomization covers simulation and reality domains</title>
+  <desc id="desc">A randomized training distribution surrounds both simulation and reality domains.</desc>
+  <style>
+    text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#172033}
+    .title{font-size:30px;font-weight:700}.body{font-size:22px}
+  </style>
+  <rect width="900" height="560" fill="#fff"/>
+  <text x="55" y="60" class="title">Domain Randomization：扩大训练分布</text>
+  <ellipse cx="460" cy="300" rx="360" ry="185" transform="rotate(-17 460 300)" fill="#ecfeff" stroke="#0f766e" stroke-width="5" stroke-dasharray="14 10"/>
+  <circle cx="340" cy="335" r="92" fill="#fee2e2" stroke="#ef4444" stroke-width="3"/>
+  <circle cx="340" cy="335" r="55" fill="#fecaca" stroke="#ef4444" stroke-width="2"/>
+  <circle cx="340" cy="335" r="28" fill="#ef4444"/>
+  <circle cx="610" cy="235" r="92" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/>
+  <circle cx="610" cy="235" r="55" fill="#bfdbfe" stroke="#2563eb" stroke-width="2"/>
+  <circle cx="610" cy="235" r="28" fill="#2563eb"/>
+  <text x="210" y="465" class="body" font-weight="700">Simulation Domain</text>
+  <text x="610" y="165" class="body" font-weight="700">Reality Domain</text>
+  <text x="475" y="430" class="body" font-weight="700" fill="#0f766e">Randomized Domain</text>
+</svg>

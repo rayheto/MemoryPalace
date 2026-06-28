@@ -1,3 +1,8 @@
+---
+tags:
+  - mainnode
+---
+
 # MemoryPalace
 
 机器人研发岗位知识体系 —— 面向底层系统、软硬件联调与电机控制。
@@ -31,3 +36,7 @@
 ### 7. 可靠性设计与样机工程化
 
 入口：[reliability_lifecycle/knowledge.md](robotics/reliability_lifecycle/knowledge.md)
+
+### 8. Sim2Real
+
+入口：[sim2real/sim2real.md](robotics/sim2real/sim2real.md)

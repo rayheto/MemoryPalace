@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 600" role="img" aria-labelledby="title desc">
+  <title id="title">Open-loop and closed-loop Sim2Real</title>
+  <desc id="desc">Comparison between open-loop deployment and closed-loop real feedback for Sim2Real.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#2563eb"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#172033}.title{font-size:28px;font-weight:700}.body{font-size:20px}.small{font-size:17px;fill:#475569}
+      .box{fill:#dbeafe;stroke:#2563eb;stroke-width:2}.algo{fill:#ccfbf1;stroke:#0f766e;stroke-width:2}
+    </style>
+  </defs>
+  <rect width="1280" height="600" fill="#fff"/>
+  <text x="55" y="55" class="title">真实系统表现：开环 vs 闭环 Sim2Real</text>
+  <g transform="translate(70 115)">
+    <text x="210" y="24" class="body" font-weight="700">开环 Open-loop</text>
+    <rect x="20" y="70" width="210" height="70" rx="10" class="box"/><text x="58" y="113" class="body">Simulator S</text>
+    <rect x="20" y="220" width="210" height="70" rx="10" class="box"/><text x="45" y="263" class="body">Virtual Agent a</text>
+    <path d="M125 140 V220" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/><path d="M230 255 C300 255 300 105 230 105" fill="none" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/>
+    <line x1="250" y1="255" x2="430" y2="255" stroke="#2563eb" stroke-width="5" marker-end="url(#arrow)"/><text x="303" y="235" class="small">Deploy</text>
+    <rect x="450" y="70" width="210" height="70" rx="10" class="box"/><text x="492" y="113" class="body">Environment E</text>
+    <rect x="450" y="220" width="210" height="70" rx="10" class="box"/><text x="515" y="263" class="body">Agent A</text>
+    <path d="M555 140 V220" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/><path d="M660 255 C720 255 720 105 660 105" fill="none" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/>
+    <rect x="110" y="355" width="460" height="62" rx="10" class="algo"/><text x="205" y="394" class="body">Robot Learning Algorithm</text>
+    <line x1="125" y1="290" x2="170" y2="355" stroke="#0f766e" stroke-width="4" marker-end="url(#arrow)"/><text x="40" y="338" class="small">r_S</text>
+    <line x1="555" y1="290" x2="510" y2="355" stroke="#0f766e" stroke-width="4" marker-end="url(#arrow)"/><text x="580" y="338" class="small">r_E</text>
+  </g>
+  <g transform="translate(835 115)">
+    <text x="130" y="24" class="body" font-weight="700">闭环 Closed-loop</text>
+    <rect x="95" y="55" width="260" height="66" rx="10" class="box"/><text x="155" y="96" class="body">Environment E</text>
+    <rect x="95" y="200" width="260" height="66" rx="10" class="box"/><text x="182" y="241" class="body">Agent A</text>
+    <rect x="135" y="330" width="180" height="60" rx="10" class="box"/><text x="174" y="368" class="body">Simulation S</text>
+    <rect x="135" y="440" width="180" height="60" rx="10" class="algo"/><text x="178" y="478" class="body">Algorithm</text>
+    <path d="M225 121 V200" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/>
+    <path d="M355 233 C420 233 420 88 355 88" fill="none" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/><text x="380" y="154" class="small">Action</text>
+    <line x1="225" y1="266" x2="225" y2="330" stroke="#2563eb" stroke-width="4" marker-end="url(#arrow)"/><text x="250" y="306" class="small">Policy π</text>
+    <line x1="225" y1="390" x2="225" y2="440" stroke="#0f766e" stroke-width="4" marker-end="url(#arrow)"/><text x="250" y="423" class="small">r_E</text>
+    <path d="M135 470 C20 470 20 88 95 88" fill="none" stroke="#0f766e" stroke-width="4" marker-end="url(#arrow)"/><text x="8" y="285" class="small">真实反馈更新</text>
+  </g>
+</svg>

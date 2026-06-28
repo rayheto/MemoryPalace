@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 600" role="img" aria-labelledby="title desc">
+  <title id="title">RSR policy learning loop</title>
+  <desc id="desc">Real robot data and simulation iterations form a loop for policy learning.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#0f766e"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#172033}.title{font-size:28px;font-weight:700}.body{font-size:20px}.small{font-size:17px;fill:#475569}
+    </style>
+  </defs>
+  <rect width="1050" height="600" fill="#fff"/>
+  <text x="55" y="55" class="title">RSR 策略学习闭环</text>
+  <ellipse cx="510" cy="190" rx="260" ry="100" fill="#ffedd5" stroke="#f97316" stroke-width="3"/>
+  <text x="450" y="170" class="body" font-weight="700">Real Robot</text>
+  <ellipse cx="510" cy="205" rx="155" ry="48" fill="#fef3c7" stroke="#ca8a04" stroke-width="2"/>
+  <text x="410" y="212" class="small">0~k-1 collected data</text>
+  <ellipse cx="300" cy="430" rx="205" ry="70" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/>
+  <text x="205" y="425" class="body" font-weight="700">k-1 th Simulation</text>
+  <text x="245" y="457" class="small">task trajectory</text>
+  <ellipse cx="735" cy="430" rx="205" ry="70" fill="#bfdbfe" stroke="#2563eb" stroke-width="3"/>
+  <text x="655" y="425" class="body" font-weight="700">k th Simulation</text>
+  <text x="625" y="457" class="small">updated distribution</text>
+  <path d="M330 355 C350 280 405 245 455 245" fill="none" stroke="#0f766e" stroke-width="5" marker-end="url(#arrow)"/>
+  <path d="M565 250 C645 280 695 330 720 360" fill="none" stroke="#0f766e" stroke-width="5" marker-end="url(#arrow)"/>
+  <path d="M505 430 H530" stroke="#0f766e" stroke-width="5" marker-end="url(#arrow)"/>
+  <rect x="145" y="82" width="255" height="55" rx="10" fill="#ecfeff" stroke="#0f766e" stroke-width="2"/>
+  <text x="165" y="116" class="small">真实表现校准仿真器</text>
+  <rect x="635" y="82" width="300" height="55" rx="10" fill="#f3e8ff" stroke="#9333ea" stroke-width="2"/>
+  <text x="655" y="116" class="small">任务完成 + 数据探索动态平衡</text>
+  <text x="260" y="550" class="body">L(a) = L_task(a) + L_sr(a)</text>
+</svg>

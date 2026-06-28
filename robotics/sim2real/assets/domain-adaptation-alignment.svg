@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 520" role="img" aria-labelledby="title desc">
+  <title id="title">Domain adaptation alignment</title>
+  <desc id="desc">Source and target feature distributions become aligned after domain adaptation.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#2563eb"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#172033}.title{font-size:28px;font-weight:700}.body{font-size:20px}.small{font-size:17px;fill:#475569}
+      .domain{fill-opacity:.55;stroke-width:3}.r{fill:#ef4444}.b{fill:#2563eb}.t{fill:#111827}
+    </style>
+  </defs>
+  <rect width="1180" height="520" fill="#fff"/>
+  <text x="55" y="56" class="title">Domain Adaptation：对齐源域与目标域</text>
+  <g transform="translate(65 105)">
+    <text x="120" y="24" class="body" font-weight="700">Before</text>
+    <ellipse cx="160" cy="185" rx="145" ry="120" class="domain" fill="#dbeafe" stroke="#2563eb"/>
+    <ellipse cx="355" cy="145" rx="130" ry="108" class="domain" fill="#ffedd5" stroke="#f97316"/>
+    <text x="68" y="330" class="small">Source labeled</text><text x="312" y="330" class="small">Target unlabeled</text>
+    <g class="r"><circle cx="105" cy="145" r="9"/><circle cx="145" cy="112" r="9"/><circle cx="190" cy="155" r="9"/><circle cx="130" cy="205" r="9"/></g>
+    <g class="b"><path d="M178 238 h24 v-24 h18 v24 h24 v18 h-24 v24 h-18 v-24 h-24z"/><path d="M85 238 h24 v-24 h18 v24 h24 v18 h-24 v24 h-18 v-24 h-24z"/></g>
+    <g class="t"><text x="330" y="118" font-size="28">×</text><text x="380" y="155" font-size="28">×</text><text x="300" y="190" font-size="28">+</text><text x="405" y="205" font-size="28">+</text><text x="350" y="245" font-size="28">×</text></g>
+  </g>
+  <line x1="575" y1="260" x2="720" y2="260" stroke="#2563eb" stroke-width="6" marker-end="url(#arrow)"/>
+  <text x="587" y="230" class="body" font-weight="700">Adapt</text>
+  <g transform="translate(760 105)">
+    <text x="145" y="24" class="body" font-weight="700">After alignment</text>
+    <ellipse cx="190" cy="185" rx="170" ry="130" class="domain" fill="#dbeafe" stroke="#2563eb"/>
+    <ellipse cx="240" cy="178" rx="165" ry="122" class="domain" fill="#ffedd5" stroke="#f97316"/>
+    <line x1="70" y1="260" x2="375" y2="105" stroke="#0f766e" stroke-width="4" stroke-dasharray="10 8"/>
+    <g class="r"><circle cx="150" cy="132" r="9"/><circle cx="195" cy="112" r="9"/><circle cx="245" cy="145" r="9"/><circle cx="117" cy="188" r="9"/></g>
+    <g class="b"><path d="M160 230 h24 v-24 h18 v24 h24 v18 h-24 v24 h-18 v-24 h-24z"/><path d="M250 230 h24 v-24 h18 v24 h24 v18 h-24 v24 h-18 v-24 h-24z"/></g>
+    <g class="t"><text x="205" y="185" font-size="28">×</text><text x="278" y="170" font-size="28">×</text><text x="305" y="230" font-size="28">+</text><text x="95" y="235" font-size="28">+</text></g>
+    <text x="92" y="340" class="small">学习域不变特征，减少分布差异</text>
+  </g>
+</svg>

@@ -1,0 +1,235 @@
+{
+  "main": {
+    "id": "4fead30d8311424f",
+    "type": "split",
+    "children": [
+      {
+        "id": "8b095490bb05edd6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3e2d4f7f77579507",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "robotics/sim2real/sim2real.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "sim2real"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "97089c2e337ad9b4",
+    "type": "split",
+    "children": [
+      {
+        "id": "611394c2c21bd574",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ffadbdb9db095b37",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "f6e01c3e0f30d3de",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "36f83cc3eed5f331",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "08802d99c09d0fa0",
+    "type": "split",
+    "children": [
+      {
+        "id": "95b76d15fa5f3dd3",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5e93744410fc2986",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "C_C++/内存对齐.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "内存对齐 的反向链接列表"
+            }
+          },
+          {
+            "id": "394e169959557bc1",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "C_C++/内存对齐.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "内存对齐 的出链列表"
+            }
+          },
+          {
+            "id": "5b2eebcdcbcf447e",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "c580fcbf326ef931",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "9ade7e1223d0c3a5",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "C_C++/内存对齐.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "内存对齐 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "3e2d4f7f77579507",
+  "lastOpenFiles": [
+    "robotics/sim2real/system_identification.md",
+    "robotics/sim2real/sim2real.md",
+    "robotics/sim2real/real2sim2real.md",
+    "robotics/sim2real/policy_transfer_and_feedback.md",
+    "robotics/sim2real/fundamentals.md",
+    "robotics/sim2real/domain_randomization_and_adaptation.md",
+    "robotics/simulator/example/slip_1d/README.md",
+    "robotics/sim2real/assets/rsr-policy-loop.svg",
+    "robotics/sim2real/assets/rsr-modeling-pipeline.svg",
+    "robotics/sim2real/assets/rsr-three-stage-flow.svg",
+    "robotics/sim2real/assets/open-closed-loop-sim2real.svg",
+    "robotics/sim2real/assets/domain-adaptation-alignment.svg",
+    "robotics/sim2real/assets/randomization-effects.svg",
+    "robotics/sim2real/assets/randomized-sim-to-real.svg",
+    "robotics/sim2real/assets/domain-randomization-domains.svg",
+    "robotics/sim2real/assets/transic-correction-flow.svg",
+    "robotics/sim2real/assets/system-identification-flow.svg",
+    "robotics/sim2real/assets",
+    "robotics/sim2real",
+    "robotics/tinker/src_analysis/omnibothub/module/module-vmc.md",
+    "robotics/tinker/src_analysis/omnibothub/module/module-src.md",
+    "robotics/tinker/src_analysis/omnibothub/module/module-reserved.md",
+    "robotics/tinker/src_analysis/omnibothub/module/module-math.md",
+    "robotics/tinker/src_analysis/omnibothub/module/module-param.md",
+    "robotics/tinker/src_analysis/omnibothub/module/module-gait.md",
+    "robotics/tinker/src_analysis/omnibottele/overview.md",
+    "robotics/tinker/src_analysis/omnibottele/firmware.md",
+    "robotics/tinker/src_analysis/omnibothub/spi-architecture.md",
+    "robotics/tinker/src_analysis/omnibothub/protocols.md",
+    "robotics/tinker/src_analysis/omnibothub/overview.md",
+    "robotics/tinker/src_analysis/omnibothub/navigation_task.md",
+    "robotics/tinker/src_analysis/omnibothub/module",
+    "robotics/tinker/src_analysis/omnibothub/module-architecture.md",
+    "robotics/tinker/src_analysis/omnibothub/control_task.md",
+    "robotics/tinker/src_analysis/omnibothmi/overview.md",
+    "robotics/tinker/src_analysis/omnibotctrl/training_pipeline.md",
+    "robotics/tinker/src_analysis/omnibotctrl/overview.md",
+    "robotics/tinker/src_analysis/omnibottele",
+    "robotics/tinker/src_analysis/omnibothub",
+    "robotics/tinker/src_analysis/omnibothmi",
+    "robotics/tinker/src_analysis/omnibotctrl",
+    "robotics/tinker/mechanical/leg-mechanism-types.md",
+    "robotics/tinker/algorithm/vmc.md",
+    "robotics/tinker/algorithm/attachments",
+    "robotics/tinker/src_analysis",
+    "robotics/tinker/mechanical"
+  ]
+}

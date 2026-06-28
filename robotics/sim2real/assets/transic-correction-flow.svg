@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+  <title id="title">TRANSIC correction flow</title>
+  <desc id="desc">Simulation policy, direct deployment, human correction, and learned residual policy.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#2563eb"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#172033}
+      .step{fill:#f8fafc;stroke:#94a3b8;stroke-width:2}.sim{fill:#dbeafe}.real{fill:#dcfce7}.human{fill:#fef3c7}.res{fill:#f3e8ff}
+      .title{font-size:28px;font-weight:700}.body{font-size:22px}.small{font-size:18px;fill:#475569}
+    </style>
+  </defs>
+  <rect width="900" height="620" fill="#fff"/>
+  <text x="48" y="56" class="title">TRANSIC：从在线纠错学习残差策略</text>
+  <g transform="translate(95 100)">
+    <rect width="700" height="86" rx="14" class="step sim"/><text x="32" y="36" class="body" font-weight="700">1. Simulation Policy</text><text x="32" y="67" class="small">在仿真环境中通过强化学习训练基础策略 π_sim</text>
+    <line x1="350" y1="96" x2="350" y2="140" stroke="#2563eb" stroke-width="5" marker-end="url(#arrow)"/>
+    <rect y="150" width="700" height="86" rx="14" class="step real"/><text x="32" y="186" class="body" font-weight="700">2. Direct Deployment</text><text x="32" y="217" class="small">将仿真策略直接部署到真实机器人</text>
+    <line x1="350" y1="246" x2="350" y2="290" stroke="#2563eb" stroke-width="5" marker-end="url(#arrow)"/>
+    <rect y="300" width="700" height="86" rx="14" class="step human"/><text x="32" y="336" class="body" font-weight="700">3. Human-in-the-Loop Correction</text><text x="32" y="367" class="small">人类远程干预，纠正失败边界附近的行为</text>
+    <line x1="350" y1="396" x2="350" y2="440" stroke="#2563eb" stroke-width="5" marker-end="url(#arrow)"/>
+    <rect y="450" width="700" height="86" rx="14" class="step res"/><text x="32" y="486" class="body" font-weight="700">4. Learned Residual Policy</text><text x="32" y="517" class="small">学习 π_residual，补偿仿真与现实的系统性误差</text>
+  </g>
+</svg>

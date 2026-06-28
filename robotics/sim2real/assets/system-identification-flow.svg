@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1250 430" role="img" aria-labelledby="title desc">
+  <title id="title">System identification flow</title>
+  <desc id="desc">Real measurements are used to identify parameters and calibrate the simulator.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#0f766e"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#172033}
+      .box{fill:#f8fafc;stroke:#94a3b8;stroke-width:2}.accent{fill:#ccfbf1;stroke:#0f766e;stroke-width:2}
+      .title{font-size:30px;font-weight:700}.body{font-size:22px}.small{font-size:18px;fill:#475569}
+    </style>
+  </defs>
+  <rect width="1250" height="430" fill="#fff"/>
+  <text x="48" y="56" class="title">System Identification：用真实数据校准仿真器</text>
+  <g transform="translate(55 105)">
+    <rect width="230" height="210" rx="16" class="box"/>
+    <text x="50" y="42" class="body" font-weight="700">真实实验数据</text>
+    <path d="M70 125 C90 70 145 70 165 125" fill="none" stroke="#2563eb" stroke-width="6"/>
+    <circle cx="70" cy="125" r="12" fill="#2563eb"/><circle cx="165" cy="125" r="12" fill="#2563eb"/>
+    <text x="35" y="175" class="small">action / state / sensor</text>
+  </g>
+  <line x1="310" y1="210" x2="435" y2="210" stroke="#0f766e" stroke-width="5" marker-end="url(#arrow)"/>
+  <g transform="translate(460 105)">
+    <rect width="260" height="210" rx="16" class="accent"/>
+    <text x="55" y="42" class="body" font-weight="700">参数估计</text>
+    <text x="45" y="95" class="small">minimize trajectory error</text>
+    <text x="48" y="140" class="body">m, μ, k, d, delay</text>
+  </g>
+  <line x1="745" y1="210" x2="870" y2="210" stroke="#0f766e" stroke-width="5" marker-end="url(#arrow)"/>
+  <g transform="translate(895 105)">
+    <rect width="295" height="210" rx="16" class="box"/>
+    <text x="62" y="42" class="body" font-weight="700">校准后仿真器</text>
+    <rect x="55" y="78" width="185" height="92" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="82" y="132" class="body">Simulator S'</text>
+    <text x="50" y="190" class="small">再训练 / 微调 / 部署验证</text>
+  </g>
+</svg>
