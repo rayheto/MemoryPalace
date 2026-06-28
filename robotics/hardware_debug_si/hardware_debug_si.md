@@ -1,3 +1,10 @@
+﻿---
+tags:
+  - robotics
+  - hardware_debug_si
+  - subnode
+---
+
 # 硬件调试与信号完整性
 
 这是区分"纯软件工程师"和"系统级软硬件工程师"的分水岭。
@@ -34,3 +41,4 @@
 
 - **High-Speed Digital Design: A Handbook of Black Magic** (Howard Johnson) —— 挑读去耦、接地和信号终端匹配章节
 - **EEVblog (YouTube):** 搜索 Oscilloscope 和 Signal Integrity 实战视频
+

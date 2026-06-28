@@ -1,3 +1,10 @@
+﻿---
+tags:
+  - robotics
+  - embedded_rtos_build
+  - subnode
+---
+
 # 嵌入式平台与构建系统
 
 对于多核 MCU 或高性能芯片，实时性（Real-time）是机器人系统的生命线。
@@ -28,3 +35,4 @@
 
 - 外部资源链接: [reference.md](reference.md)
 - FreeRTOS Kernel V10.5.1 源码: `esp-idf/components/freertos/FreeRTOS-Kernel/`
+

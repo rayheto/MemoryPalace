@@ -1,3 +1,10 @@
+﻿---
+tags:
+  - robotics
+  - linux_dev_tuning
+  - subnode
+---
+
 # Linux 底层开发与调优
 
 机器人通常是异构系统（MCU 负责实时控制，Linux/SoC 负责上层算法或 AI 交互）。
@@ -36,3 +43,4 @@
 - **Bootlin Training Materials:** 全球顶级的嵌入式 Linux 开源培训资料 (`bootlin.com/docs/`)
 - **Linux Device Drivers (LDD3):** 驱动开发的经典入门
 - **Brendan Gregg's Perf Tools:** `brendangregg.com/perf.html`
+

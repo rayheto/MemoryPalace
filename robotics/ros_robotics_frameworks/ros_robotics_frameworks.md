@@ -1,3 +1,10 @@
+﻿---
+tags:
+  - robotics
+  - ros_robotics_frameworks
+  - subnode
+---
+
 # ROS2 与机器人框架
 
 ROS2 是机器人软件工程的事实标准中间件。对于机器人软件工程师岗位，ROS2 不仅是"会用"，更需要理解其通信模型、QoS 策略、DDS 底层以及各工具的工程适配。
@@ -129,3 +136,4 @@ ROS2 是机器人软件工程的事实标准中间件。对于机器人软件工
 | YARP | 人形机器人 | iCub 平台使用；分布式计算；与 ROS2 bridge |
 | LCM (Lightweight Communications and Marshalling) | 轻量通信 | MIT 研发；UDP 多播；用于 DRC 机器人挑战赛；比 ROS 轻量但生态小 |
 | zenoh | 下一代通信 | Eclipse 项目；支持 ROS2 桥接；DDS 替代方案；边缘-云统一通信 |
+

@@ -1,3 +1,10 @@
+﻿---
+tags:
+  - robotics
+  - industrial_protocols
+  - subnode
+---
+
 # 工业通信协议 (EtherCAT)
 
 EtherCAT 在机械臂、人形机器人和高端工控中几乎是标配。
@@ -32,3 +39,4 @@ EtherCAT 在机械臂、人形机器人和高端工控中几乎是标配。
 - **Beckhoff 官方文档:** 了解从站控制器 (ESC) 基础概念和寄存器定义
 - **CiA 402 规范:** CAN in Automation 官网
 - **[嵌入式多机同步技术分析报告](embedded_multi_device_sync.md)** —— PTP/IEEE 1588、EtherCAT DC、PPS+ToD 同步方案对比，23ppm 频偏解决方案
+

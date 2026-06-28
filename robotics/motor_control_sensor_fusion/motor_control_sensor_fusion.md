@@ -1,3 +1,10 @@
+﻿---
+tags:
+  - robotics
+  - motor_control_sensor_fusion
+  - subnode
+---
+
 # 电机控制 (FOC) 与传感器融合
 
 针对机械臂或人形机器人，关节模组的底层控制是核心。
@@ -67,3 +74,4 @@ FOC 五大核心模块均有独立深度文档，按学习顺序阅读：
 - **SimpleFOC:** [github.com/simplefoc/Arduino-FOC](https://github.com/simplefoc/Arduino-FOC) —— 开源 FOC 库，代码架构清晰
 - **ODrive:** [github.com/odriverobotics/ODrive](https://github.com/odriverobotics/ODrive) —— 高性能伺服驱动，编码器校准参考
 - **Madgwick AHRS:** [github.com/xioTechnologies/Fusion](https://github.com/xioTechnologies/Fusion) —— 传感器融合参考实现
+

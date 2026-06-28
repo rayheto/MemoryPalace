@@ -1,3 +1,10 @@
+---
+tags:
+  - robotics
+  - cpp_and_python
+  - subnode
+---
+
 # 现代 C/C++ 与脚本自动化
 
 面试官不仅会考察 C 语言的底层内存管理，还会看重现代 C++ 在大型项目中的工程化应用，以及用 Python 快速编写自动化测试脚本的能力。
@@ -27,3 +34,4 @@
 ## 参考
 
 - 外部资源链接: [reference.md](reference.md)
+
