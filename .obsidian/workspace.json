@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "robotics/tinker/tinker.md",
+                "file": "robotics/sim2real/domain_randomization_and_adaptation.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "tinker"
+              "title": "domain_randomization_and_adaptation"
             }
           }
         ]
@@ -185,6 +185,28 @@
   },
   "active": "d2a73aa4ac396978",
   "lastOpenFiles": [
+    "robotics/sim2real/fundamentals.md",
+    "lerobot-rlinf/third_party/RLinf",
+    "lerobot-rlinf/third_party/openpi",
+    "lerobot-rlinf/third_party/leisaac",
+    "lerobot-rlinf/third_party",
+    "lerobot-rlinf/src/rl/simple/__init__.py",
+    "lerobot-rlinf/src/rl/simple/_openpi_server.py",
+    "lerobot-rlinf/src/rl/simple/train.py",
+    "lerobot-rlinf/src/rl/simple/rollout_buffer.py",
+    "lerobot-rlinf/src/rl/simple/reward_shaping.py",
+    "lerobot-rlinf/src/rl/simple/ppo.py",
+    "lerobot-rlinf/docs/sft_diagnostics_findings.md",
+    "lerobot-rlinf/docs/rl_lessons_learned.md",
+    "lerobot-rlinf/docs/notes.zh.md",
+    "lerobot-rlinf/docs/notes.md",
+    "lerobot-rlinf/README.zh.md",
+    "lerobot-rlinf/README.md",
+    "robotics/sim2real/policy_transfer_and_feedback.md",
+    "robotics/sim2real/real2sim2real.md",
+    "robotics/sim2real/sim2real.md",
+    "robotics/tinker/algorithm/LIPM_not_for_tinker.md",
+    "robotics/tinker/tinker.md",
     "README.md",
     "robotics/cpp_and_python/cpp_and_python.md",
     "robotics/linux_dev_tuning/linux_dev_tuning.md",
@@ -194,12 +216,7 @@
     "robotics/ros_robotics_frameworks/ros_robotics_frameworks.md",
     "robotics/reliability_lifecycle/reliability_lifecycle.md",
     "robotics/hardware_debug_si/hardware_debug_si.md",
-    "robotics/tinker/tinker.md",
-    "robotics/sim2real/sim2real.md",
     "robotics/sim2real/system_identification.md",
-    "robotics/sim2real/real2sim2real.md",
-    "robotics/sim2real/policy_transfer_and_feedback.md",
-    "robotics/sim2real/fundamentals.md",
     "robotics/sim2real/domain_randomization_and_adaptation.md",
     "robotics/simulator/example/slip_1d/README.md",
     "robotics/sim2real/assets/rsr-policy-loop.svg",
@@ -212,24 +229,6 @@
     "robotics/sim2real/assets/domain-randomization-domains.svg",
     "robotics/sim2real/assets/transic-correction-flow.svg",
     "robotics/sim2real/assets/system-identification-flow.svg",
-    "robotics/sim2real/assets",
-    "robotics/sim2real",
-    "robotics/tinker/src_analysis/omnibothub/module/module-vmc.md",
-    "robotics/tinker/src_analysis/omnibothub/module/module-src.md",
-    "robotics/tinker/src_analysis/omnibothub/module/module-reserved.md",
-    "robotics/tinker/src_analysis/omnibothub/module/module-math.md",
-    "robotics/tinker/src_analysis/omnibothub/module/module-param.md",
-    "robotics/tinker/src_analysis/omnibothub/module/module-gait.md",
-    "robotics/tinker/src_analysis/omnibottele/overview.md",
-    "robotics/tinker/src_analysis/omnibottele/firmware.md",
-    "robotics/tinker/src_analysis/omnibothub/spi-architecture.md",
-    "robotics/tinker/src_analysis/omnibothub/module",
-    "robotics/tinker/src_analysis/omnibottele",
-    "robotics/tinker/src_analysis/omnibothub",
-    "robotics/tinker/src_analysis/omnibothmi",
-    "robotics/tinker/src_analysis/omnibotctrl",
-    "robotics/tinker/algorithm/attachments",
-    "robotics/tinker/src_analysis",
-    "robotics/tinker/mechanical"
+    "robotics/tinker/src_analysis/omnibothub/module/module-vmc.md"
   ]
 }
